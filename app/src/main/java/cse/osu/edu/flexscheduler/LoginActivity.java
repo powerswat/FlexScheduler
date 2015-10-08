@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
-    private View mLoginFormView; // Test github
+    private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
