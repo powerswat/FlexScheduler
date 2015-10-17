@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,10 +64,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    private final static String  TAG = "LoginActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Log.d(TAG, "onCreate()");
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -87,6 +92,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "OnClick()");
                 attemptLogin();
             }
         });
@@ -96,6 +102,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void populateAutoComplete() {
+        Log.d(TAG, "populateAutoComplete()");
+
         if (!mayRequestContacts()) {
             return;
         }
@@ -104,6 +112,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean mayRequestContacts() {
+        Log.d(TAG, "mayRequestContacts()");
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
@@ -131,6 +141,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult()");
         if (requestCode == REQUEST_READ_CONTACTS) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 populateAutoComplete();
@@ -145,6 +156,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        Log.d(TAG, "attemptLogin()");
+
         if (mAuthTask != null) {
             return;
         }
@@ -192,11 +205,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isEmailValid(String email) {
+
+        Log.d(TAG, "isEmailValid()");
         //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
+        Log.d(TAG, "isPasswordValid()");
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
@@ -206,6 +222,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
+        Log.d(TAG, "showProgress()");
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
@@ -239,6 +256,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        Log.d(TAG, "onCreateLoader()");
+
         return new CursorLoader(this,
                 // Retrieve data rows for the device user's 'profile' contact.
                 Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
@@ -257,6 +276,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
         List<String> emails = new ArrayList<>();
+
+        Log.d(TAG, "onLoadFinished()");
+
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             emails.add(cursor.getString(ProfileQuery.ADDRESS));
@@ -283,6 +305,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+        Log.d(TAG, "addEmailsToAutoComplete()");
+
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(LoginActivity.this,
@@ -300,6 +324,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mEmail;
         private final String mPassword;
 
+        private final static String  TAG = "UserLoginTask";
+
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -308,6 +334,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+            Log.d(TAG, "doInBackground()");
 
             try {
                 // Simulate network access.
@@ -330,6 +357,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            Log.d(TAG, "onPostExecute()");
+
             mAuthTask = null;
             showProgress(false);
 
@@ -345,6 +374,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected void onCancelled() {
+            Log.d(TAG, "onCancelled()");
+
             mAuthTask = null;
             showProgress(false);
         }
