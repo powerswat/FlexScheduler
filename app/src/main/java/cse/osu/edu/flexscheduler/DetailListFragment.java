@@ -19,4 +19,6 @@ public class DetailListFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_detail_list, container, false);
     }
+
+
 }
