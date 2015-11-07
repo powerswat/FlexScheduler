@@ -30,7 +30,7 @@ public class CrimeListFragment extends Fragment {
      * Required interface for hosting activities.
      */
     public interface Callbacks {
-        void onCrimeSelected(Crime crime);
+        void onSchedSelected(Sched sched);
     }
 
     @Override
@@ -98,10 +98,10 @@ public class CrimeListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
-                Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
+                Sched sched = new Sched();
+                CrimeLab.get(getActivity()).addSched(sched);
                 updateUI();
-                mCallbacks.onCrimeSelected(crime);
+                mCallbacks.onSchedSelected(sched);
                 return true;
             case R.id.menu_item_show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -115,7 +115,7 @@ public class CrimeListFragment extends Fragment {
 
     private void updateSubtitle() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
-        int crimeCount = crimeLab.getCrimes().size();
+        int crimeCount = crimeLab.getScheds().size();
         String subtitle = getString(R.string.subtitle_format, crimeCount);
 
         if (!mSubtitleVisible) {
@@ -128,13 +128,13 @@ public class CrimeListFragment extends Fragment {
 
     public void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
-        List<Crime> crimes = crimeLab.getCrimes();
+        List<Sched> scheds = crimeLab.getScheds();
 
         if (mAdapter == null) {
-            mAdapter = new CrimeAdapter(crimes);
+            mAdapter = new CrimeAdapter(scheds);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.setCrimes(crimes);
+            mAdapter.setScheds(scheds);
             mAdapter.notifyDataSetChanged();
         }
 
@@ -148,7 +148,7 @@ public class CrimeListFragment extends Fragment {
         private TextView mDateTextView;
         private CheckBox mSolvedCheckBox;
 
-        private Crime mCrime;
+        private Sched mSched;
 
         public CrimeHolder(View itemView) {
             super(itemView);
@@ -159,25 +159,25 @@ public class CrimeListFragment extends Fragment {
             mSolvedCheckBox = (CheckBox) itemView.findViewById(R.id.list_item_crime_solved_check_box);
         }
 
-        public void bindCrime(Crime crime) {
-            mCrime = crime;
-            mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
-            mSolvedCheckBox.setChecked(mCrime.isSolved());
+        public void bindCrime(Sched sched) {
+            mSched = sched;
+            mTitleTextView.setText(mSched.getTitle());
+            mDateTextView.setText(mSched.getDate().toString());
+            mSolvedCheckBox.setChecked(mSched.isSolved());
         }
 
         @Override
         public void onClick(View v) {
-            mCallbacks.onCrimeSelected(mCrime);
+            mCallbacks.onSchedSelected(mSched);
         }
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
 
-        private List<Crime> mCrimes;
+        private List<Sched> mScheds;
 
-        public CrimeAdapter(List<Crime> crimes) {
-            mCrimes = crimes;
+        public CrimeAdapter(List<Sched> scheds) {
+            mScheds = scheds;
         }
 
         @Override
@@ -189,17 +189,17 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(CrimeHolder holder, int position) {
-            Crime crime = mCrimes.get(position);
-            holder.bindCrime(crime);
+            Sched sched = mScheds.get(position);
+            holder.bindCrime(sched);
         }
 
         @Override
         public int getItemCount() {
-            return mCrimes.size();
+            return mScheds.size();
         }
 
-        public void setCrimes(List<Crime> crimes) {
-            mCrimes = crimes;
+        public void setScheds(List<Sched> scheds) {
+            mScheds = scheds;
         }
     }
 }

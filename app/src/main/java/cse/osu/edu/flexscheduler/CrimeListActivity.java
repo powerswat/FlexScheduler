@@ -17,12 +17,12 @@ public class CrimeListActivity extends SingleFragmentActivity
     }
 
     @Override
-    public void onCrimeSelected(Crime crime) {
+    public void onSchedSelected(Sched sched) {
         if (findViewById(R.id.detail_fragment_container) == null) {
-            Intent intent = CrimePagerActivity.newIntent(this, crime.getId());
+            Intent intent = CrimePagerActivity.newIntent(this, sched.getId());
             startActivity(intent);
         } else {
-            Fragment newDetail = CrimeFragment.newInstance(crime.getId());
+            Fragment newDetail = CrimeFragment.newInstance(sched.getId());
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_fragment_container, newDetail)
@@ -31,7 +31,7 @@ public class CrimeListActivity extends SingleFragmentActivity
     }
 
     @Override
-    public void onCrimeUpdated(Crime crime) {
+    public void onSchedUpdated(Sched sched) {
         CrimeListFragment listFragment = (CrimeListFragment)
                 getSupportFragmentManager()
                         .findFragmentById(R.id.fragment_container);

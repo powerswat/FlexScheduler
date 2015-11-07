@@ -3,7 +3,7 @@ package cse.osu.edu.flexscheduler.database;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-import cse.osu.edu.flexscheduler.Crime;
+import cse.osu.edu.flexscheduler.Sched;
 import cse.osu.edu.flexscheduler.database.SchedDbSchema.SchedTable;
 
 import java.util.Date;
@@ -14,19 +14,19 @@ public class SchedCursorWrapper extends CursorWrapper {
         super(cursor);
     }
 
-    public Crime getCrime() {
+    public Sched getSched() {
         String uuidString = getString(getColumnIndex(SchedTable.Cols.UUID));
         String title = getString(getColumnIndex(SchedTable.Cols.TITLE));
         long date = getLong(getColumnIndex(SchedTable.Cols.DATE));
         int isSolved = getInt(getColumnIndex(SchedTable.Cols.SOLVED));
         String suspect = getString(getColumnIndex(SchedTable.Cols.SUSPECT));
 
-        Crime crime = new Crime(UUID.fromString(uuidString));
-        crime.setTitle(title);
-        crime.setDate(new Date(date));
-        crime.setSolved(isSolved != 0);
-        crime.setSuspect(suspect);
+        Sched sched = new Sched(UUID.fromString(uuidString));
+        sched.setTitle(title);
+        sched.setDate(new Date(date));
+        sched.setSolved(isSolved != 0);
+        sched.setSuspect(suspect);
 
-        return crime;
+        return sched;
     }
 }

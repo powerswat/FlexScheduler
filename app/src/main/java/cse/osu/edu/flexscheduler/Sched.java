@@ -3,7 +3,7 @@ package cse.osu.edu.flexscheduler;
 import java.util.Date;
 import java.util.UUID;
 
-public class Crime {
+public class Sched {
 
     private UUID mId;
     private String mTitle;
@@ -11,11 +11,11 @@ public class Crime {
     private boolean mSolved;
     private String mSuspect;
 
-    public Crime() {
+    public Sched() {
         this(UUID.randomUUID());
     }
 
-    public Crime(UUID id) {
+    public Sched(UUID id) {
         mId = id;
         mDate = new Date();
     }

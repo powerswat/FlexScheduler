@@ -39,7 +39,7 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO= 2;
 
-    private Crime mCrime;
+    private Sched mSched;
     private File mPhotoFile;
     private EditText mTitleField;
     private Button mDateButton;
@@ -54,7 +54,7 @@ public class CrimeFragment extends Fragment {
      * Required interface for hosting activities.
      */
     public interface Callbacks {
-        void onCrimeUpdated(Crime crime);
+        void onSchedUpdated(Sched sched);
     }
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -76,8 +76,8 @@ public class CrimeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
-        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        mSched = CrimeLab.get(getActivity()).getSched(crimeId);
+        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mSched);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class CrimeFragment extends Fragment {
         super.onPause();
 
         CrimeLab.get(getActivity())
-                .updateCrime(mCrime);
+                .updateSched(mSched);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class CrimeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
 
         mTitleField = (EditText) v.findViewById(R.id.crime_title);
-        mTitleField.setText(mCrime.getTitle());
+        mTitleField.setText(mSched.getTitle());
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -112,8 +112,8 @@ public class CrimeFragment extends Fragment {
                 if (getActivity() == null) {
                     return;
                 }
-                mCrime.setTitle(s.toString());
-                updateCrime();
+                mSched.setTitle(s.toString());
+                updateSched();
             }
 
             @Override
@@ -129,19 +129,19 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
                 FragmentManager manager = getFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment
-                        .newInstance(mCrime.getDate());
+                        .newInstance(mSched.getDate());
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
             }
         });
 
         mSolvedCheckbox = (CheckBox) v.findViewById(R.id.crime_solved);
-        mSolvedCheckbox.setChecked(mCrime.isSolved());
+        mSolvedCheckbox.setChecked(mSched.isSolved());
         mSolvedCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCrime.setSolved(isChecked);
-                updateCrime();
+                mSched.setSolved(isChecked);
+                updateSched();
             }
         });
 
@@ -168,8 +168,8 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        if (mCrime.getSuspect() != null) {
-            mSuspectButton.setText(mCrime.getSuspect());
+        if (mSched.getSuspect() != null) {
+            mSuspectButton.setText(mSched.getSuspect());
         }
 
         PackageManager packageManager = getActivity().getPackageManager();
@@ -223,8 +223,8 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            mCrime.setDate(date);
-            updateCrime();
+            mSched.setDate(date);
+            updateSched();
             updateDate();
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             Uri contactUri = data.getData();
@@ -250,44 +250,44 @@ public class CrimeFragment extends Fragment {
                 c.moveToFirst();
 
                 String suspect = c.getString(0);
-                mCrime.setSuspect(suspect);
-                updateCrime();
+                mSched.setSuspect(suspect);
+                updateSched();
                 mSuspectButton.setText(suspect);
             } finally {
                 c.close();
             }
         } else if (requestCode == REQUEST_PHOTO) {
-            updateCrime();
+            updateSched();
             updatePhotoView();
         }
     }
 
-    private void updateCrime() {
-        CrimeLab.get(getActivity()).updateCrime(mCrime);
-        mCallbacks.onCrimeUpdated(mCrime);
+    private void updateSched() {
+        CrimeLab.get(getActivity()).updateSched(mSched);
+        mCallbacks.onSchedUpdated(mSched);
     }
 
     private void updateDate() {
-        mDateButton.setText(mCrime.getDate().toString());
+        mDateButton.setText(mSched.getDate().toString());
     }
 
     private String getCrimeReport() {
         String solvedString = null;
-        if (mCrime.isSolved()) {
+        if (mSched.isSolved()) {
             solvedString = getString(R.string.crime_report_solved);
         } else {
             solvedString = getString(R.string.crime_report_unsolved);
         }
         String dateFormat = "EEE, MMM dd";
-        String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
-        String suspect = mCrime.getSuspect();
+        String dateString = DateFormat.format(dateFormat, mSched.getDate()).toString();
+        String suspect = mSched.getSuspect();
         if (suspect == null) {
             suspect = getString(R.string.crime_report_no_suspect);
         } else {
             suspect = getString(R.string.crime_report_suspect, suspect);
         }
         String report = getString(R.string.crime_report,
-                mCrime.getTitle(), dateString, solvedString, suspect);
+                mSched.getTitle(), dateString, solvedString, suspect);
         return report;
     }
 

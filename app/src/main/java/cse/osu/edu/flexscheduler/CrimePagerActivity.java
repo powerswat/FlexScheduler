@@ -18,7 +18,7 @@ public class CrimePagerActivity extends AppCompatActivity
             "com.bignerdranch.android.criminalintent.crime_id";
 
     private ViewPager mViewPager;
-    private List<Crime> mCrimes;
+    private List<Sched> mScheds;
 
     public static Intent newIntent(Context packageContext, UUID crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
@@ -36,19 +36,19 @@ public class CrimePagerActivity extends AppCompatActivity
 
         mViewPager = (ViewPager) findViewById(R.id.activity_crime_pager_view_pager);
 
-        mCrimes = CrimeLab.get(this).getCrimes();
+        mScheds = CrimeLab.get(this).getScheds();
         FragmentManager fragmentManager = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
 
             @Override
             public Fragment getItem(int position) {
-                Crime crime = mCrimes.get(position);
-                return CrimeFragment.newInstance(crime.getId());
+                Sched sched = mScheds.get(position);
+                return CrimeFragment.newInstance(sched.getId());
             }
 
             @Override
             public int getCount() {
-                return mCrimes.size();
+                return mScheds.size();
             }
         });
 
@@ -58,9 +58,9 @@ public class CrimePagerActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                Crime crime = mCrimes.get(position);
-                if (crime.getTitle() != null) {
-                    setTitle(crime.getTitle());
+                Sched sched = mScheds.get(position);
+                if (sched.getTitle() != null) {
+                    setTitle(sched.getTitle());
                 }
             }
 
@@ -68,8 +68,8 @@ public class CrimePagerActivity extends AppCompatActivity
             public void onPageScrollStateChanged(int state) { }
         });
 
-        for (int i = 0; i < mCrimes.size(); i++) {
-            if (mCrimes.get(i).getId().equals(crimeId)) {
+        for (int i = 0; i < mScheds.size(); i++) {
+            if (mScheds.get(i).getId().equals(crimeId)) {
                 mViewPager.setCurrentItem(i);
                 break;
             }
@@ -77,7 +77,7 @@ public class CrimePagerActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCrimeUpdated(Crime crime) {
+    public void onSchedUpdated(Sched sched) {
 
     }
 }

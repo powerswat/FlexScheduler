@@ -35,31 +35,31 @@ public class CrimeLab {
     }
 
 
-    public void addCrime(Crime c) {
-        ContentValues values = getContentValues(c);
+    public void addSched(Sched s) {
+        ContentValues values = getContentValues(s);
 
         mDatabase.insert(SchedTable.NAME, null, values);
     }
 
-    public List<Crime> getCrimes() {
-        List<Crime> crimes = new ArrayList<>();
+    public List<Sched> getScheds() {
+        List<Sched> scheds = new ArrayList<>();
 
-        SchedCursorWrapper cursor = queryCrimes(null, null);
+        SchedCursorWrapper cursor = queryScheds(null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            crimes.add(cursor.getCrime());
+            scheds.add(cursor.getSched());
             cursor.moveToNext();
         }
         cursor.close();
 
-        return crimes;
+        return scheds;
     }
 
-    public Crime getCrime(UUID id) {
-        SchedCursorWrapper cursor = queryCrimes(
+    public Sched getSched(UUID id) {
+        SchedCursorWrapper cursor = queryScheds(
                 SchedTable.Cols.UUID + " = ?",
-                new String[] { id.toString() }
+                new String[]{id.toString()}
         );
 
         try {
@@ -68,13 +68,13 @@ public class CrimeLab {
             }
 
             cursor.moveToFirst();
-            return cursor.getCrime();
+            return cursor.getSched();
         } finally {
             cursor.close();
         }
     }
 
-    public File getPhotoFile(Crime crime) {
+    public File getPhotoFile(Sched sched) {
         File externalFilesDir = mContext
                 .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
@@ -82,30 +82,30 @@ public class CrimeLab {
             return null;
         }
 
-        return new File(externalFilesDir, crime.getPhotoFilename());
+        return new File(externalFilesDir, sched.getPhotoFilename());
     }
 
-    public void updateCrime(Crime crime) {
-        String uuidString = crime.getId().toString();
-        ContentValues values = getContentValues(crime);
+    public void updateSched(Sched sched) {
+        String uuidString = sched.getId().toString();
+        ContentValues values = getContentValues(sched);
 
         mDatabase.update(SchedTable.NAME, values,
                 SchedTable.Cols.UUID + " = ?",
                 new String[] { uuidString });
     }
 
-    private static ContentValues getContentValues(Crime crime) {
+    private static ContentValues getContentValues(Sched sched) {
         ContentValues values = new ContentValues();
-        values.put(SchedTable.Cols.UUID, crime.getId().toString());
-        values.put(SchedTable.Cols.TITLE, crime.getTitle());
-        values.put(SchedTable.Cols.DATE, crime.getDate().getTime());
-        values.put(SchedTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
-        values.put(SchedTable.Cols.SUSPECT, crime.getSuspect());
+        values.put(SchedTable.Cols.UUID, sched.getId().toString());
+        values.put(SchedTable.Cols.TITLE, sched.getTitle());
+        values.put(SchedTable.Cols.DATE, sched.getDate().getTime());
+        values.put(SchedTable.Cols.SOLVED, sched.isSolved() ? 1 : 0);
+        values.put(SchedTable.Cols.SUSPECT, sched.getSuspect());
 
         return values;
     }
 
-    private SchedCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
+    private SchedCursorWrapper queryScheds(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 SchedTable.NAME,
                 null, // Columns - null selects all columns
