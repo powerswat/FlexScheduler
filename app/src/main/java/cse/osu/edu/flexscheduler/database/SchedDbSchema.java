@@ -1,8 +1,8 @@
 package cse.osu.edu.flexscheduler.database;
 
-public class CrimeDbSchema {
-    public static final class CrimeTable {
-        public static final String NAME = "crimes";
+public class SchedDbSchema {
+    public static final class SchedTable {
+        public static final String NAME = "scheds1";
 
         public static final class Cols {
             public static final String UUID = "uuid";

@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
 import cse.osu.edu.flexscheduler.database.CrimeCursorWrapper;
-import cse.osu.edu.flexscheduler.database.CrimeDbSchema.CrimeTable;
+import cse.osu.edu.flexscheduler.database.SchedDbSchema.SchedTable;
 import cse.osu.edu.flexscheduler.database.SchedBaseHelper;
 
 import java.io.File;
@@ -38,7 +38,7 @@ public class CrimeLab {
     public void addCrime(Crime c) {
         ContentValues values = getContentValues(c);
 
-        mDatabase.insert(CrimeTable.NAME, null, values);
+        mDatabase.insert(SchedTable.NAME, null, values);
     }
 
     public List<Crime> getCrimes() {
@@ -58,7 +58,7 @@ public class CrimeLab {
 
     public Crime getCrime(UUID id) {
         CrimeCursorWrapper cursor = queryCrimes(
-                CrimeTable.Cols.UUID + " = ?",
+                SchedTable.Cols.UUID + " = ?",
                 new String[] { id.toString() }
         );
 
@@ -89,25 +89,25 @@ public class CrimeLab {
         String uuidString = crime.getId().toString();
         ContentValues values = getContentValues(crime);
 
-        mDatabase.update(CrimeTable.NAME, values,
-                CrimeTable.Cols.UUID + " = ?",
+        mDatabase.update(SchedTable.NAME, values,
+                SchedTable.Cols.UUID + " = ?",
                 new String[] { uuidString });
     }
 
     private static ContentValues getContentValues(Crime crime) {
         ContentValues values = new ContentValues();
-        values.put(CrimeTable.Cols.UUID, crime.getId().toString());
-        values.put(CrimeTable.Cols.TITLE, crime.getTitle());
-        values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
-        values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
-        values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
+        values.put(SchedTable.Cols.UUID, crime.getId().toString());
+        values.put(SchedTable.Cols.TITLE, crime.getTitle());
+        values.put(SchedTable.Cols.DATE, crime.getDate().getTime());
+        values.put(SchedTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
+        values.put(SchedTable.Cols.SUSPECT, crime.getSuspect());
 
         return values;
     }
 
     private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
-                CrimeTable.NAME,
+                SchedTable.NAME,
                 null, // Columns - null selects all columns
                 whereClause,
                 whereArgs,

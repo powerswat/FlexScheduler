@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 
 import cse.osu.edu.flexscheduler.Crime;
-import cse.osu.edu.flexscheduler.database.CrimeDbSchema.CrimeTable;
+import cse.osu.edu.flexscheduler.database.SchedDbSchema.SchedTable;
 
 import java.util.Date;
 import java.util.UUID;
@@ -15,11 +15,11 @@ public class CrimeCursorWrapper extends CursorWrapper {
     }
 
     public Crime getCrime() {
-        String uuidString = getString(getColumnIndex(CrimeTable.Cols.UUID));
-        String title = getString(getColumnIndex(CrimeTable.Cols.TITLE));
-        long date = getLong(getColumnIndex(CrimeTable.Cols.DATE));
-        int isSolved = getInt(getColumnIndex(CrimeTable.Cols.SOLVED));
-        String suspect = getString(getColumnIndex(CrimeTable.Cols.SUSPECT));
+        String uuidString = getString(getColumnIndex(SchedTable.Cols.UUID));
+        String title = getString(getColumnIndex(SchedTable.Cols.TITLE));
+        long date = getLong(getColumnIndex(SchedTable.Cols.DATE));
+        int isSolved = getInt(getColumnIndex(SchedTable.Cols.SOLVED));
+        String suspect = getString(getColumnIndex(SchedTable.Cols.SUSPECT));
 
         Crime crime = new Crime(UUID.fromString(uuidString));
         crime.setTitle(title);
