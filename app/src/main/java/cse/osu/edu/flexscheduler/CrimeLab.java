@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
-import cse.osu.edu.flexscheduler.database.CrimeCursorWrapper;
+import cse.osu.edu.flexscheduler.database.SchedCursorWrapper;
 import cse.osu.edu.flexscheduler.database.SchedDbSchema.SchedTable;
 import cse.osu.edu.flexscheduler.database.SchedBaseHelper;
 
@@ -44,7 +44,7 @@ public class CrimeLab {
     public List<Crime> getCrimes() {
         List<Crime> crimes = new ArrayList<>();
 
-        CrimeCursorWrapper cursor = queryCrimes(null, null);
+        SchedCursorWrapper cursor = queryCrimes(null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -57,7 +57,7 @@ public class CrimeLab {
     }
 
     public Crime getCrime(UUID id) {
-        CrimeCursorWrapper cursor = queryCrimes(
+        SchedCursorWrapper cursor = queryCrimes(
                 SchedTable.Cols.UUID + " = ?",
                 new String[] { id.toString() }
         );
@@ -105,7 +105,7 @@ public class CrimeLab {
         return values;
     }
 
-    private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
+    private SchedCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 SchedTable.NAME,
                 null, // Columns - null selects all columns
@@ -116,6 +116,6 @@ public class CrimeLab {
                 null  // orderBy
         );
 
-        return new CrimeCursorWrapper(cursor);
+        return new SchedCursorWrapper(cursor);
     }
 }

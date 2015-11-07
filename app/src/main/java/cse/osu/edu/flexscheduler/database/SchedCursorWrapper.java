@@ -9,8 +9,8 @@ import cse.osu.edu.flexscheduler.database.SchedDbSchema.SchedTable;
 import java.util.Date;
 import java.util.UUID;
 
-public class CrimeCursorWrapper extends CursorWrapper {
-    public CrimeCursorWrapper(Cursor cursor) {
+public class SchedCursorWrapper extends CursorWrapper {
+    public SchedCursorWrapper(Cursor cursor) {
         super(cursor);
     }
 
