@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
-import cse.osu.edu.flexscheduler.database.CrimeBaseHelper;
 import cse.osu.edu.flexscheduler.database.CrimeCursorWrapper;
 import cse.osu.edu.flexscheduler.database.CrimeDbSchema.CrimeTable;
+import cse.osu.edu.flexscheduler.database.SchedBaseHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class CrimeLab {
 
     private CrimeLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new CrimeBaseHelper(mContext)
+        mDatabase = new SchedBaseHelper(mContext)
                 .getWritableDatabase();
     }
 
