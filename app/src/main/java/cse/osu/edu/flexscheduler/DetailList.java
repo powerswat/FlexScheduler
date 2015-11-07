@@ -6,6 +6,8 @@ import java.util.GregorianCalendar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -110,6 +112,9 @@ public class DetailList extends AppCompatActivity {
             case R.id.duration_minutes:
                 durationMinutesNow();
                 break;*/
+            case R.id.place:
+                mapClick();
+                break;
         }
     }
 
@@ -162,43 +167,8 @@ public class DetailList extends AppCompatActivity {
             };
 
 
-
-    void durationHoursNow() {
-        final CharSequence[] items = {"0", "1", "2", "3", "4", "5", "6", "7"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);     // 여기서 this는 Activity의 this
-
-        // 여기서 부터는 알림창의 속성 설정
-        builder.setTitle("Hours")        // 제목 설정
-                .setItems(items, new DialogInterface.OnClickListener() {    // 목록 클릭시 설정
-                    public void onClick(DialogInterface dialog, int index) {
-                        Toast.makeText(getApplicationContext(), items[index], Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();    // 알림창 객체 생성
-        dialog.show();    // 알림창 띄우기
-    }
-
-    void durationMinutesNow() {
-        final CharSequence[] items = {"0", "1", "2", "3", "4", "5", "6", "7"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);     // 여기서 this는 Activity의 this
-
-        // 여기서 부터는 알림창의 속성 설정
-        builder.setTitle("Minutes")        // 제목 설정
-                .setItems(items, new DialogInterface.OnClickListener() {    // 목록 클릭시 설정
-                    public void onClick(DialogInterface dialog, int index) {
-                        Toast.makeText(getApplicationContext(), items[index], Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();    // 알림창 객체 생성
-        dialog.show();    // 알림창 띄우기
-    }
-
     void startUpdateNow(){
-            startTxtDate.setText(String.format("%d/%d/%d", startMonth+1, startDay, startYear));
+            startTxtDate.setText(String.format("%d/%d/%d", startMonth + 1, startDay, startYear));
             startTxtTime.setText(String.format("%d:%d", startHour, startMinute));
     }
 
@@ -207,4 +177,12 @@ public class DetailList extends AppCompatActivity {
             deadlineTxtTime.setText(String.format("%d:%d", deadlineHour, deadlineMinute));
     }
 
+    void mapClick() {
+       /* Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }*/
+    }
 }
