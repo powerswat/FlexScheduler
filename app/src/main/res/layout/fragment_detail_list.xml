@@ -59,7 +59,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter title"
+                    android:layout_weight="0.72"
                     android:id="@+id/title" />
             </LinearLayout>
 
@@ -71,54 +71,120 @@
                     android:text="Start"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"/>
-               <!-- <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:id="@+id/start_date" />
 
-                <EditText
+                <TextView
+                    android:id="@+id/start_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="time"
-                    android:id="@+id/start_time" /> -->
+                    android:layout_weight="0.72"
+                    android:text="Aug 20, 2012"
+                    android:onClick="mOnClick"
+                    style="@android:style/Widget.Holo.Light.Spinner" />
+
+                <TextView
+                    android:id="@+id/start_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.72"
+                    android:text="11:00 AM"
+                    android:onClick="mOnClick"
+                    style="@android:style/Widget.Holo.Light.Spinner" />
+                   <!-- android:layout_width="0dp"-->
+
+                <!-- <EditText
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:inputType="date"
+                     android:id="@+id/start_date" />
+
+                 <EditText
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:inputType="time"
+                     android:id="@+id/start_time" /> -->
             </LinearLayout>
 
-            <TextView
-                android:text="Duration"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_gravity="left"/>
-
-            <EditText
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="time"
-                android:hint="Enter duration time"
-                android:ems="10"
-                android:id="@+id/duration_time" />
+                android:layout_height="wrap_content" >
+                <TextView
+                    android:text="Duration"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+                <!--<Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/duration_hours"
+                    android:layout_weight="0.72" />-->
+                <!-- <TextView
+                    android:id="@+id/duration_hours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.72"
+                    android:text="2"
+                    android:onClick="durationHoursNow"
+                    style="@android:style/Widget.Holo.Light.Spinner" />
+                   -->
 
-            <TextView
-                android:text="Deadline"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_gravity="left"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:layout_weight="0.72"
+                    android:id="@+id/duration_hours"/>
 
-            <EditText
+                <TextView
+                    android:text="Hours"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+                <!--<Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/duration_minutes"
+                    android:layout_weight="0.72" />-->
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:layout_weight="0.72"
+                    android:id="@+id/duration_minutes"/>
+
+                <TextView
+                    android:text="Minutes"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="date"
-                android:hint="Enter duration date"
-                android:ems="10"
-                android:id="@+id/deadline_date" />
+                android:layout_height="wrap_content" >
+                <TextView
+                    android:text="Deadline"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="time"
-                android:hint="Enter deadline time"
-                android:ems="10"
-                android:id="@+id/deadline_time" />
+                <TextView
+                    android:id="@+id/deadline_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.72"
+                    android:text="Aug 20, 2012"
+                    android:onClick="mOnClick"
+                    style="@android:style/Widget.Holo.Light.Spinner" />
+
+                <TextView
+                    android:id="@+id/deadline_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.72"
+                    android:text="11:00 AM"
+                    android:onClick="mOnClick"
+                    style="@android:style/Widget.Holo.Light.Spinner" />
+            </LinearLayout>
 
             <TextView
                 android:text="Place"
@@ -129,7 +195,6 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter place"
                 android:id="@+id/place"
                 android:layout_gravity="center_horizontal" />
 
@@ -143,7 +208,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:hint="Enter participant"
                 android:ems="10"
                 android:id="@+id/participant"
                 android:layout_gravity="center_horizontal" />
@@ -158,7 +222,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:hint="Enter note"
                 android:ems="10"
                 android:id="@+id/note"
                 android:layout_gravity="center_horizontal" />
