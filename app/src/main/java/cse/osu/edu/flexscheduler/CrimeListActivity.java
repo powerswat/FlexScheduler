@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 public class CrimeListActivity extends SingleFragmentActivity
-        implements CrimeListFragment.Callbacks, SchedFragment.Callbacks {
+        implements SchedListFragment.Callbacks, SchedFragment.Callbacks {
 
     @Override
     protected Fragment createFragment() {
-        return new CrimeListFragment();
+        return new SchedListFragment();
     }
 
     @Override
@@ -19,7 +19,7 @@ public class CrimeListActivity extends SingleFragmentActivity
     @Override
     public void onSchedSelected(Sched sched) {
         if (findViewById(R.id.detail_fragment_container) == null) {
-            Intent intent = CrimePagerActivity.newIntent(this, sched.getId());
+            Intent intent = SchedPagerActivity.newIntent(this, sched.getId());
             startActivity(intent);
         } else {
             Fragment newDetail = SchedFragment.newInstance(sched.getId());
@@ -32,7 +32,7 @@ public class CrimeListActivity extends SingleFragmentActivity
 
     @Override
     public void onSchedUpdated(Sched sched) {
-        CrimeListFragment listFragment = (CrimeListFragment)
+        SchedListFragment listFragment = (SchedListFragment)
                 getSupportFragmentManager()
                         .findFragmentById(R.id.fragment_container);
         listFragment.updateUI();

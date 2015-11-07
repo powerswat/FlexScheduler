@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class CrimeListFragment extends Fragment {
+public class SchedListFragment extends Fragment {
 
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
@@ -141,7 +141,7 @@ public class CrimeListFragment extends Fragment {
         updateSubtitle();
     }
 
-    private class CrimeHolder extends RecyclerView.ViewHolder 
+    private class CrimeHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
         private TextView mTitleTextView;
