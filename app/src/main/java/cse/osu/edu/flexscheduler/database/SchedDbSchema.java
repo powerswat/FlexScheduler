@@ -12,4 +12,16 @@ public class SchedDbSchema {
             public static final String SUSPECT = "suspect";
         }
     }
+
+    public static final class UserTable {
+        public static final String NAME = "user";
+
+        public static final class Cols {
+            public static final String EID = "eid";
+            public static final String PID = "pid";
+            public static final String EMAIL = "email";
+            public static final String PASSWORD = "password";
+            public static final String CURR_LOC = "curr_loc";
+        }
+    }
 }
