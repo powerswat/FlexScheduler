@@ -12,17 +12,17 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimePagerActivity extends AppCompatActivity
+public class SchedPagerActivity extends AppCompatActivity
         implements SchedFragment.Callbacks {
-    private static final String EXTRA_CRIME_ID =
-            "com.bignerdranch.android.criminalintent.crime_id";
+    private static final String EXTRA_SCHED_ID =
+            "cse.osu.edu.flexscheduler.sched_id";
 
     private ViewPager mViewPager;
     private List<Sched> mScheds;
 
-    public static Intent newIntent(Context packageContext, UUID crimeId) {
-        Intent intent = new Intent(packageContext, CrimePagerActivity.class);
-        intent.putExtra(EXTRA_CRIME_ID, crimeId);
+    public static Intent newIntent(Context packageContext, UUID schedId) {
+        Intent intent = new Intent(packageContext, SchedPagerActivity.class);
+        intent.putExtra(EXTRA_SCHED_ID, schedId);
         return intent;
     }
 
@@ -31,8 +31,8 @@ public class CrimePagerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crime_pager);
 
-        UUID crimeId = (UUID) getIntent()
-                .getSerializableExtra(EXTRA_CRIME_ID);
+        UUID schedId = (UUID) getIntent()
+                .getSerializableExtra(EXTRA_SCHED_ID);
 
         mViewPager = (ViewPager) findViewById(R.id.activity_crime_pager_view_pager);
 
@@ -69,7 +69,7 @@ public class CrimePagerActivity extends AppCompatActivity
         });
 
         for (int i = 0; i < mScheds.size(); i++) {
-            if (mScheds.get(i).getId().equals(crimeId)) {
+            if (mScheds.get(i).getId().equals(schedId)) {
                 mViewPager.setCurrentItem(i);
                 break;
             }

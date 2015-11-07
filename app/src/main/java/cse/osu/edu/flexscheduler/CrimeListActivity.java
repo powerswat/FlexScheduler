@@ -19,7 +19,7 @@ public class CrimeListActivity extends SingleFragmentActivity
     @Override
     public void onSchedSelected(Sched sched) {
         if (findViewById(R.id.detail_fragment_container) == null) {
-            Intent intent = CrimePagerActivity.newIntent(this, sched.getId());
+            Intent intent = SchedPagerActivity.newIntent(this, sched.getId());
             startActivity(intent);
         } else {
             Fragment newDetail = SchedFragment.newInstance(sched.getId());
