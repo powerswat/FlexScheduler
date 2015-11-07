@@ -15,20 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CrimeLab {
-    private static CrimeLab sCrimeLab;
+public class SchedLab {
+    private static SchedLab sSchedLab;
 
     private Context mContext;
     private SQLiteDatabase mDatabase;
 
-    public static CrimeLab get(Context context) {
-        if (sCrimeLab == null) {
-            sCrimeLab = new CrimeLab(context);
+    public static SchedLab get(Context context) {
+        if (sSchedLab == null) {
+            sSchedLab = new SchedLab(context);
         }
-        return sCrimeLab;
+        return sSchedLab;
     }
 
-    private CrimeLab(Context context) {
+    private SchedLab(Context context) {
         mContext = context.getApplicationContext();
         mDatabase = new SchedBaseHelper(mContext)
                 .getWritableDatabase();

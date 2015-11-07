@@ -99,7 +99,7 @@ public class CrimeListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
                 Sched sched = new Sched();
-                CrimeLab.get(getActivity()).addSched(sched);
+                SchedLab.get(getActivity()).addSched(sched);
                 updateUI();
                 mCallbacks.onSchedSelected(sched);
                 return true;
@@ -114,9 +114,9 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateSubtitle() {
-        CrimeLab crimeLab = CrimeLab.get(getActivity());
-        int crimeCount = crimeLab.getScheds().size();
-        String subtitle = getString(R.string.subtitle_format, crimeCount);
+        SchedLab schedLab = SchedLab.get(getActivity());
+        int schedCount = schedLab.getScheds().size();
+        String subtitle = getString(R.string.subtitle_format, schedCount);
 
         if (!mSubtitleVisible) {
             subtitle = null;
@@ -127,8 +127,8 @@ public class CrimeListFragment extends Fragment {
     }
 
     public void updateUI() {
-        CrimeLab crimeLab = CrimeLab.get(getActivity());
-        List<Sched> scheds = crimeLab.getScheds();
+        SchedLab schedLab = SchedLab.get(getActivity());
+        List<Sched> scheds = schedLab.getScheds();
 
         if (mAdapter == null) {
             mAdapter = new CrimeAdapter(scheds);

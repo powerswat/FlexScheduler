@@ -76,15 +76,15 @@ public class SchedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
-        mSched = CrimeLab.get(getActivity()).getSched(crimeId);
-        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mSched);
+        mSched = SchedLab.get(getActivity()).getSched(crimeId);
+        mPhotoFile = SchedLab.get(getActivity()).getPhotoFile(mSched);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        CrimeLab.get(getActivity())
+        SchedLab.get(getActivity())
                 .updateSched(mSched);
     }
 
@@ -263,7 +263,7 @@ public class SchedFragment extends Fragment {
     }
 
     private void updateSched() {
-        CrimeLab.get(getActivity()).updateSched(mSched);
+        SchedLab.get(getActivity()).updateSched(mSched);
         mCallbacks.onSchedUpdated(mSched);
     }
 

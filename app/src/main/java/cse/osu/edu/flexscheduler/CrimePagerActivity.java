@@ -36,7 +36,7 @@ public class CrimePagerActivity extends AppCompatActivity
 
         mViewPager = (ViewPager) findViewById(R.id.activity_crime_pager_view_pager);
 
-        mScheds = CrimeLab.get(this).getScheds();
+        mScheds = SchedLab.get(this).getScheds();
         FragmentManager fragmentManager = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
 
