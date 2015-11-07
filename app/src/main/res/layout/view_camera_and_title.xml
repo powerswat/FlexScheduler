@@ -11,13 +11,13 @@
         android:orientation="vertical"
         android:layout_marginRight="4dp"
         >
-        <ImageView android:id="@+id/crime_photo"
+        <ImageView android:id="@+id/Sched_photo"
                    android:layout_width="80dp"
                    android:layout_height="80dp"
                    android:scaleType="centerInside"
                    android:background="@android:color/darker_gray"
                    android:cropToPadding="true"/>
-        <ImageButton android:id="@+id/crime_camera"
+        <ImageButton android:id="@+id/Sched_camera"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"
                      android:src="@android:drawable/ic_menu_camera"
@@ -32,14 +32,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/crime_title_label"
+            android:text="@string/sched_title_label"
             style="?android:listSeparatorTextViewStyle"
             />
-        <EditText android:id="@+id/crime_title"
+        <EditText android:id="@+id/Sched_title"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_marginRight="16dp"
-                  android:hint="@string/crime_title_hint"
+                  android:hint="@string/sched_title_hint"
             />
     </LinearLayout>
 </LinearLayout>
