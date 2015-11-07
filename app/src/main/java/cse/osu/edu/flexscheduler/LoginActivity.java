@@ -376,7 +376,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                Intent i = new Intent(LoginActivity.this, CrimeListActivity.class);// jihoon: temp change
+                Intent i = new Intent(LoginActivity.this, SchedListActivity.class);// jihoon: temp change
                 startActivity(i);
                 finish();
             } else {

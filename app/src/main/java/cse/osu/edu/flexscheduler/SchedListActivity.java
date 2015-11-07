@@ -3,7 +3,7 @@ package cse.osu.edu.flexscheduler;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
-public class CrimeListActivity extends SingleFragmentActivity
+public class SchedListActivity extends SingleFragmentActivity
         implements SchedListFragment.Callbacks, SchedFragment.Callbacks {
 
     @Override
