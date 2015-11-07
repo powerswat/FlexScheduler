@@ -38,16 +38,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SchedListActivity"
-            android:label="@string/title_activity_sched_list"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
-        <activity
             android:name=".SchedPagerActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".CrimeListActivity">
+            android:parentActivityName=".SchedListActivity">
         </activity>
-        <activity android:name=".CrimeListActivity">
+        <activity android:name=".SchedListActivity">
         </activity>
         <activity
             android:name=".DetailList"
