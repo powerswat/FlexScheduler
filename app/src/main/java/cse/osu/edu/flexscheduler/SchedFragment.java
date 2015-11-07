@@ -30,7 +30,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
-public class CrimeFragment extends Fragment {
+public class SchedFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogDate";
@@ -57,11 +57,11 @@ public class CrimeFragment extends Fragment {
         void onSchedUpdated(Sched sched);
     }
 
-    public static CrimeFragment newInstance(UUID crimeId) {
+    public static SchedFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_CRIME_ID, crimeId);
 
-        CrimeFragment fragment = new CrimeFragment();
+        SchedFragment fragment = new SchedFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -130,7 +130,7 @@ public class CrimeFragment extends Fragment {
                 FragmentManager manager = getFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment
                         .newInstance(mSched.getDate());
-                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+                dialog.setTargetFragment(SchedFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
             }
         });

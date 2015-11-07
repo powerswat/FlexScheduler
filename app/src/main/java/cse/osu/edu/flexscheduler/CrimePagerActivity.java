@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class CrimePagerActivity extends AppCompatActivity
-        implements CrimeFragment.Callbacks {
+        implements SchedFragment.Callbacks {
     private static final String EXTRA_CRIME_ID =
             "com.bignerdranch.android.criminalintent.crime_id";
 
@@ -43,7 +43,7 @@ public class CrimePagerActivity extends AppCompatActivity
             @Override
             public Fragment getItem(int position) {
                 Sched sched = mScheds.get(position);
-                return CrimeFragment.newInstance(sched.getId());
+                return SchedFragment.newInstance(sched.getId());
             }
 
             @Override

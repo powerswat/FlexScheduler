@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 public class CrimeListActivity extends SingleFragmentActivity
-        implements CrimeListFragment.Callbacks, CrimeFragment.Callbacks {
+        implements CrimeListFragment.Callbacks, SchedFragment.Callbacks {
 
     @Override
     protected Fragment createFragment() {
@@ -22,7 +22,7 @@ public class CrimeListActivity extends SingleFragmentActivity
             Intent intent = CrimePagerActivity.newIntent(this, sched.getId());
             startActivity(intent);
         } else {
-            Fragment newDetail = CrimeFragment.newInstance(sched.getId());
+            Fragment newDetail = SchedFragment.newInstance(sched.getId());
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_fragment_container, newDetail)
