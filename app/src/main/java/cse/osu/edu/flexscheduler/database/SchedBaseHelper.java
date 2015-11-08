@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import cse.osu.edu.flexscheduler.database.SchedDbSchema.SchedTable;
-import cse.osu.edu.flexscheduler.database.SchedDbSchema.UserTable;
 
 public class SchedBaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "SchedBaseHelper";
@@ -26,15 +25,6 @@ public class SchedBaseHelper extends SQLiteOpenHelper {
                         SchedTable.Cols.DATE + ", " +
                         SchedTable.Cols.SOLVED + ", " +
                         SchedTable.Cols.SUSPECT +
-                        ")"
-        );
-
-        db.execSQL("create table " + UserTable.NAME + "(" +
-                        " _id integer primary key autoincrement, " +
-                        UserTable.UserCols.PID + ", " +
-                        UserTable.UserCols.EMAIL + ", " +
-                        UserTable.UserCols.PASSWORD + ", " +
-                        UserTable.UserCols.CURR_LOC +
                         ")"
         );
     }

@@ -36,7 +36,7 @@
             android:value="AIzaSyA7xAOCDus59dasTrov45-0K6MfZVwJrKs" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".DatabaseActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,6 +68,10 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
         </activity>
+
+        <activity android:name="NewUserActivity"></activity>
+        <activity android:name="UserLoggedInPage"></activity>
+        <activity android:name="AdminPage"></activity>
     </application>
 
 </manifest>
