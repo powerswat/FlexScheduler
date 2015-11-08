@@ -18,7 +18,7 @@ public class SchedListActivity extends SingleFragmentActivity
 
     @Override
     public void onSchedSelected(Sched sched) {
-        if (findViewById(R.id.detail_fragment_container) == null) {
+        /*if (findViewById(R.id.detail_fragment_container) == null) {
             Intent intent = SchedPagerActivity.newIntent(this, sched.getId());
             startActivity(intent);
         } else {
@@ -27,7 +27,8 @@ public class SchedListActivity extends SingleFragmentActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.detail_fragment_container, newDetail)
                     .commit();
-        }
+        }*/
+        startActivity(new Intent(SchedListActivity.this, DetailList.class));
     }
 
     @Override
