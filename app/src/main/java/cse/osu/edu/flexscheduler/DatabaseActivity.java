@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * Adopted from: https://github.com/SaketSrivastav/Simple-Login-Page
+ */
 
 public class DatabaseActivity extends Activity implements OnClickListener {
     

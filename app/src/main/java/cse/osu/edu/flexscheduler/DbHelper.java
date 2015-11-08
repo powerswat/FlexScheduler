@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * @author saket
- *
+ * Adopted from: https://github.com/SaketSrivastav/Simple-Login-Page
  */
 public class DbHelper extends SQLiteOpenHelper {
 

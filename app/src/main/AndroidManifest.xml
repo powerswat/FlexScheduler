@@ -70,7 +70,6 @@
         </activity>
 
         <activity android:name="NewUserActivity"></activity>
-        <activity android:name="UserLoggedInPage"></activity>
         <activity android:name="AdminPage"></activity>
     </application>
 

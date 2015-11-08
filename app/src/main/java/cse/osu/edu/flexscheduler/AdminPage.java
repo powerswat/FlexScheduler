@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 /**
  * @author saket
- *
+ * Adopted from: https://github.com/SaketSrivastav/Simple-Login-Page
  */
 public class AdminPage extends Activity implements OnClickListener {
 
