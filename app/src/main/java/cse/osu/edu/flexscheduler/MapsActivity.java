@@ -64,11 +64,11 @@ public class MapsActivity extends FragmentActivity {
      * <p>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
-    private void setUpMap() {
+    /*private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
-    }
+    }*/
 
-  /*  private void setUpMap() {
+   private void setUpMap() {
         mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker").snippet("Snippet"));
 
         // Enable MyLocation Layer of Google Map
@@ -104,5 +104,5 @@ public class MapsActivity extends FragmentActivity {
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
-    }*/
+    }
 }
