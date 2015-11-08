@@ -16,7 +16,7 @@ public class SchedDbSchema {
     public static final class UserTable {
         public static final String NAME = "user";
 
-        public static final class Cols {
+        public static final class UserCols {
             public static final String EID = "eid";
             public static final String PID = "pid";
             public static final String EMAIL = "email";

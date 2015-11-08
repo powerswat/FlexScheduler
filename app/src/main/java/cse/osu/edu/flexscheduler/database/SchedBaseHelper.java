@@ -10,7 +10,7 @@ import cse.osu.edu.flexscheduler.database.SchedDbSchema.UserTable;
 public class SchedBaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "SchedBaseHelper";
     private static final int VERSION = 2;
-    private static final String DATABASE_NAME = "schedBase4.db";
+    private static final String DATABASE_NAME = "schedBase5.db";
 
     public SchedBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -31,11 +31,10 @@ public class SchedBaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table " + UserTable.NAME + "(" +
                         " _id integer primary key autoincrement, " +
-                        UserTable.Cols.EID + ", " +
-                        UserTable.Cols.PID + ", " +
-                        UserTable.Cols.EMAIL + ", " +
-                        UserTable.Cols.PASSWORD + ", " +
-                        UserTable.Cols.CURR_LOC +
+                        UserTable.UserCols.PID + ", " +
+                        UserTable.UserCols.EMAIL + ", " +
+                        UserTable.UserCols.PASSWORD + ", " +
+                        UserTable.UserCols.CURR_LOC +
                         ")"
         );
     }
