@@ -21,6 +21,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="23"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,9 +35,13 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+       <!-- <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_maps_key" />
+-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA7xAOCDus59dasTrov45-0K6MfZVwJrKs" />
+            android:value="@string/google_geo_key" />
 
         <activity
             android:name=".DatabaseActivity"
@@ -55,15 +63,14 @@
 
         <activity
             android:name=".DetailList"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:label="@string/title_activity_detail_list" >
         </activity>
         <activity android:name=".ImageActivity"
                   android:theme="@style/AppThemeTranslucent"/>
 
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyA7xAOCDus59dasTrov45-0K6MfZVwJrKs" />
 
+<<<<<<< HEAD
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
@@ -71,6 +78,8 @@
 
         <activity android:name="NewUserActivity"></activity>
         <activity android:name="AdminPage"></activity>
+=======
+>>>>>>> refs/remotes/origin/document
     </application>
 
 </manifest>

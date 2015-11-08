@@ -41,6 +41,7 @@
 
     <string name="title_activity_maps">MapsActivity</string>
 
+<<<<<<< HEAD
     <string name="hello">Hello World, DatabaseActivity!</string>
     <string name="title">Login Page</string>
     <string name="txtUname">Username</string>
@@ -54,4 +55,8 @@
     <string name="loggedin">User Logged In</string>
     <string name="buttonShowAll">All Users</string>
     <string name="adminTitle">Admin Login</string>
+=======
+    <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
+    <string name="google_geo_key" translatable="false" templateMergeStrategy="preserve">AIzaSyA7xAOCDus59dasTrov45-0K6MfZVwJrKs</string>
+>>>>>>> refs/remotes/origin/document
 </resources>
