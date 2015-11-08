@@ -53,14 +53,11 @@
 
         <activity
             android:name=".DetailList"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:label="@string/title_activity_detail_list" >
         </activity>
 
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" >
-        </activity>
     </application>
 
 </manifest>

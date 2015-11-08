@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
