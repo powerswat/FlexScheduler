@@ -22,7 +22,7 @@ public class SchedListFragment extends Fragment {
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
 
     private RecyclerView mCrimeRecyclerView;
-    private CrimeAdapter mAdapter;
+    private SchedAdapter mAdapter;
     private boolean mSubtitleVisible;
     private Callbacks mCallbacks;
 
@@ -131,7 +131,7 @@ public class SchedListFragment extends Fragment {
         List<Sched> scheds = schedLab.getScheds();
 
         if (mAdapter == null) {
-            mAdapter = new CrimeAdapter(scheds);
+            mAdapter = new SchedAdapter(scheds);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.setScheds(scheds);
@@ -172,11 +172,11 @@ public class SchedListFragment extends Fragment {
         }
     }
 
-    private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
+    private class SchedAdapter extends RecyclerView.Adapter<CrimeHolder> {
 
         private List<Sched> mScheds;
 
-        public CrimeAdapter(List<Sched> scheds) {
+        public SchedAdapter(List<Sched> scheds) {
             mScheds = scheds;
         }
 
