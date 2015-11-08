@@ -17,6 +17,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail_list">DetailList</string>
     <string name="hello_world">Hello world!</string>
+<<<<<<< HEAD
 
     <string name="sched_title_hint">Enter a title for the schedule.</string>
     <string name="sched_title_label">Title</string>
@@ -39,4 +40,7 @@
     <string name="crime_report_subject">FlexScheduler Schedule Report</string>
     <string name="send_report">Send schedule report via</string>
 
+=======
+    <string name="title_activity_maps">MapsActivity</string>
+>>>>>>> refs/remotes/origin/document
 </resources>

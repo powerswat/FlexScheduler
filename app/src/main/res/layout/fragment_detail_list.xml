@@ -13,7 +13,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true">
             <LinearLayout
                 android:orientation="horizontal"
@@ -186,17 +186,34 @@
                     style="@android:style/Widget.Holo.Light.Spinner" />
             </LinearLayout>
 
+            <!-- <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Button"
+                android:id="@+id/test_place" />
+-->
             <TextView
                 android:text="Place"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_gravity="left"/>
 
-            <EditText
+            <TextView
+                android:id="@+id/test_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.72"
+                android:onClick="mOnClick"
+                style="@android:style/Widget.Holo.Light.Spinner" />
+
+            <!--<EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/place"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"/>
+            -->
+
 
             <TextView
                 android:text="Participant"

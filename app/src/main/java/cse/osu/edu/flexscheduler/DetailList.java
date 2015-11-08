@@ -3,9 +3,16 @@ package cse.osu.edu.flexscheduler;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +28,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+
 public class DetailList extends AppCompatActivity {
 
     int startYear, startMonth, startDay, startHour, startMinute;
@@ -31,6 +46,8 @@ public class DetailList extends AppCompatActivity {
     TextView startTxtTime;
     TextView deadlineTxtDate;
     TextView deadlineTxtTime;
+
+    private static final int REQUEST_PLACE_PICKER = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +127,11 @@ public class DetailList extends AppCompatActivity {
             case R.id.duration_minutes:
                 durationMinutesNow();
                 break;*/
+            case R.id.test_place:
+                mapClick();
+                //Intent i = new Intent(DetailList.this, MapsActivity.class);// jihoon: temp change
+                //startActivity(i);
+                break;
         }
     }
 
@@ -162,43 +184,8 @@ public class DetailList extends AppCompatActivity {
             };
 
 
-
-    void durationHoursNow() {
-        final CharSequence[] items = {"0", "1", "2", "3", "4", "5", "6", "7"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);     // 여기서 this는 Activity의 this
-
-        // 여기서 부터는 알림창의 속성 설정
-        builder.setTitle("Hours")        // 제목 설정
-                .setItems(items, new DialogInterface.OnClickListener() {    // 목록 클릭시 설정
-                    public void onClick(DialogInterface dialog, int index) {
-                        Toast.makeText(getApplicationContext(), items[index], Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();    // 알림창 객체 생성
-        dialog.show();    // 알림창 띄우기
-    }
-
-    void durationMinutesNow() {
-        final CharSequence[] items = {"0", "1", "2", "3", "4", "5", "6", "7"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);     // 여기서 this는 Activity의 this
-
-        // 여기서 부터는 알림창의 속성 설정
-        builder.setTitle("Minutes")        // 제목 설정
-                .setItems(items, new DialogInterface.OnClickListener() {    // 목록 클릭시 설정
-                    public void onClick(DialogInterface dialog, int index) {
-                        Toast.makeText(getApplicationContext(), items[index], Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();    // 알림창 객체 생성
-        dialog.show();    // 알림창 띄우기
-    }
-
     void startUpdateNow(){
-            startTxtDate.setText(String.format("%d/%d/%d", startMonth+1, startDay, startYear));
+            startTxtDate.setText(String.format("%d/%d/%d", startMonth + 1, startDay, startYear));
             startTxtTime.setText(String.format("%d:%d", startHour, startMinute));
     }
 
@@ -207,4 +194,98 @@ public class DetailList extends AppCompatActivity {
             deadlineTxtTime.setText(String.format("%d:%d", deadlineHour, deadlineMinute));
     }
 
+   /* void mapClick() {
+     //   LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        // Create a criteria object to retrieve provider
+      //  Criteria criteria = new Criteria();
+
+    //    String provider = locationManager.getBestProvider(criteria, true);
+
+     //   Location myLocation = locationManager.getLastKnownLocation(provider);
+
+        // Get latitude of the current location
+       // double latitude = myLocation.getLatitude();
+
+        // Get longitude of the current location
+       // double longitude = myLocation.getLongitude();
+
+        Uri gmmIntentUri = Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345");
+
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }
+    }*/
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // BEGIN_INCLUDE(activity_result)
+        if (requestCode == REQUEST_PLACE_PICKER) {
+            // This result is from the PlacePicker dialog.
+
+            // Enable the picker option
+            //showPickAction(true);
+
+            if (resultCode == Activity.RESULT_OK) {
+                /* User has picked a place, extract data.
+                   Data is extracted from the returned intent by retrieving a Place object from
+                   the PlacePicker.
+                 */
+                final Place place = PlacePicker.getPlace(data,this);
+                /* A Place object contains details about that place, such as its name, address
+                and phone number. Extract the name, address, phone number, place ID and place types.
+                 */
+                final CharSequence name = place.getName();
+                final CharSequence address = place.getAddress();
+                final CharSequence phone = place.getPhoneNumber();
+                final String placeId = place.getId();
+                String attribution = PlacePicker.getAttributions(data);
+                if(attribution == null){
+                    attribution = "";
+                }
+/*
+                // Update data on card.
+                getCardStream().getCard(CARD_DETAIL)
+                        .setTitle(name.toString())
+                        .setDescription(getString(R.string.detail_text, placeId, address, phone,
+                                attribution));
+
+                // Print data to debug log
+                Log.d(TAG, "Place selected: " + placeId + " (" + name.toString() + ")");
+
+                // Show the card.
+                getCardStream().showCard(CARD_DETAIL);
+
+            } else {
+                // User has not selected a place, hide the card.
+                getCardStream().hideCard(CARD_DETAIL);*/
+            }
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        // END_INCLUDE(activity_result)
+    }
+
+    void mapClick() {
+        try {
+            PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+            Intent intent = intentBuilder.build(this);
+            // Start the Intent by requesting a result, identified by a request code.
+            startActivityForResult(intent, REQUEST_PLACE_PICKER);
+
+            // Hide the pick option in the UI to prevent users from starting the picker
+            // multiple times.
+            // showPickAction(false);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            GooglePlayServicesUtil
+                    .getErrorDialog(e.getConnectionStatusCode(), this, 0);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Toast.makeText(this, "Google Play Services is not available.",
+                    Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
 }
