@@ -190,7 +190,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                values.put("account_id", getIntent().getStringExtra("accountID"));
                 values.put("title", mTitleView.getText().toString());
                 values.put("start_date", startTxtDate.getText().toString());
                 values.put("start_time", startTxtTime.getText().toString());
@@ -200,7 +199,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 values.put("participants", mParticipantView.getText().toString());
                 values.put("note", mNoteView.getText().toString());
 
-                addEntry(values);
+                updateEntry(values);
 
                 Intent i = new Intent(DetailList.this, EventListActivity.class);
                 i.putExtra("accountID", getIntent().getStringExtra("accountID"));
@@ -269,9 +268,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
 
                 if (cursor.moveToFirst()) {
+                    String textStr[] = cursor.getString(cursor.getColumnIndex("duration")).split("\\s+");
                     mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
                     startTxtDate.setText(cursor.getString(cursor.getColumnIndex("start_date")));
                     startTxtTime.setText(cursor.getString(cursor.getColumnIndex("start_time")));
+                    durationTxtHours.setText(textStr[0]);
+                    durationTxtMinutes.setText(textStr[1]);
                     deadlineTxtDate.setText(cursor.getString(cursor.getColumnIndex("deadline_date")));
                     deadlineTxtTime.setText(cursor.getString(cursor.getColumnIndex("deadline_time")));
                     mParticipantView.setText(cursor.getString(cursor.getColumnIndex("participants")));
@@ -522,6 +524,22 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
         try{
             db.insert(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, null, values);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        db.close();
+    }
+
+    public void updateEntry(ContentValues values){
+        mydb = new EventDatabase(this);
+        SQLiteDatabase db = mydb.getWritableDatabase();
+
+        String[] selectionArg = {getIntent().getStringExtra("accountID"), getIntent().getStringExtra("eventID")};
+
+        String selection = "account_id=? AND event_id=?";
+
+        try{
+            db.update(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, values,selection, selectionArg);
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -21,10 +21,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder> {
         CardView cv;
 
         TextView event_title;
-        TextView start_date;
-        TextView start_time;
-        TextView deadline_date;
-        TextView deadline_time;
+        TextView event_date;
         String  tempAccountID, tempEventID;
         private final Context context;
 
@@ -33,10 +30,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder> {
             context = itemView.getContext();
             cv = (CardView)itemView.findViewById(R.id.cv);
             event_title = (TextView)itemView.findViewById(R.id.event_title);
-            start_date = (TextView)itemView.findViewById(R.id.start_date);
-            start_time = (TextView)itemView.findViewById(R.id.start_time);
-            deadline_date = (TextView)itemView.findViewById(R.id.deadline_date);
-            deadline_time = (TextView)itemView.findViewById(R.id.deadline_time);
+            event_date = (TextView)itemView.findViewById(R.id.event_date);
 
             itemView.setOnClickListener(this);
         }
@@ -79,11 +73,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder> {
     @Override
     public void onBindViewHolder(EventViewHolder eventViewHolder, int i) {
         eventViewHolder.event_title.setText(events.get(i).mEventTitle);
-        eventViewHolder.start_date.setText(events.get(i).mEventStartDate);
-        eventViewHolder.start_time.setText(events.get(i).mEventStartTime);
-        eventViewHolder.deadline_date.setText(events.get(i).mEventDeadlineDate);
-        eventViewHolder.deadline_time.setText(events.get(i).mEventDeadlineTime);
-
+        eventViewHolder.event_date.setText("Start :" + events.get(i).mEventStartDate + " " + events.get(i).mEventStartTime + " Deadline :"
+                + events.get(i).mEventDeadlineDate + " " + events.get(i).mEventDeadlineTime );
         eventViewHolder.setItem(events.get(i).mAccountID, events.get(i).mEventID);
     }
 
