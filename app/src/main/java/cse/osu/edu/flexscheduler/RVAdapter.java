@@ -33,9 +33,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.EventViewHolder> {
         }
     }
 
-    List<SingleEvent> events;
+    List<SingleEventForList> events;
 
-    RVAdapter(List<SingleEvent> events){
+    RVAdapter(List<SingleEventForList> events){
         this.events = events;
     }
 

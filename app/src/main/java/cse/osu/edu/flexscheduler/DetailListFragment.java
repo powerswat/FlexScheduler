@@ -105,6 +105,6 @@ public class DetailListFragment extends Fragment {
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-    }
+   }
 
 }

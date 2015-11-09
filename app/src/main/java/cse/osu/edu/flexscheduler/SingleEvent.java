@@ -16,13 +16,13 @@ import java.util.UUID;
     String mEventDeadlineDate;
     String mEventDeadlineTime;
     String mEventPlace;
-    String mEventPlaceLangitude;
+    String mEventPlaceLatitude;
     String mEventPlaceLongitude;
     String mEventParticipants;
     String mEventNote;
 
     SingleEvent(long accountID, long eventID, String eventTitle, String eventStartDate, String eventStartTime,
-            String eventDuration, String eventDeadlineDate, String eventDeadlineTime, String eventPlace, String eventPlaceLangitude,
+            String eventDuration, String eventDeadlineDate, String eventDeadlineTime, String eventPlace, String eventPlaceLatitude,
             String eventPlaceLongitude, String eventParticipants, String eventNote) {
         mAccountID = accountID;
         mEventID = eventID;
@@ -33,7 +33,7 @@ import java.util.UUID;
         mEventDeadlineDate = eventDeadlineDate;
         mEventDeadlineTime = eventDeadlineTime;
         mEventPlace = eventPlace;
-        mEventPlaceLangitude = eventPlaceLangitude;
+        mEventPlaceLatitude = eventPlaceLatitude;
         mEventPlaceLongitude = eventPlaceLongitude;
         mEventParticipants = eventParticipants;
         mEventNote = eventNote;

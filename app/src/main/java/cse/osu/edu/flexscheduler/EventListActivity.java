@@ -1,17 +1,28 @@
 package cse.osu.edu.flexscheduler;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventListActivity extends AppCompatActivity {
 
+    private List<SingleEventForList> events;
+    private RecyclerView rv;
+
+    EventDatabase mydb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,10 +36,80 @@ public class EventListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(EventListActivity.this, DetailList.class);
-                //i.putExtra("accountID", String.valueOf(id));
+                i.putExtra("detailListMode", String.valueOf(1));
+                i.putExtra("accountID", getIntent().getStringExtra("accountID"));
                 startActivity(i);
             }
         });
+
+        rv=(RecyclerView)findViewById(R.id.rv);
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
+
+        initializeData();
+        initializeAdapter();
+    }
+
+    private void initializeData(){
+        events = new ArrayList<>();
+        mydb = new EventDatabase(this);
+
+/*
+        SQLiteDatabase db = mydb.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("account_id", getIntent().getStringExtra("accountID"));
+        values.put("start_date", "01/01/2000");
+        values.put("start_time", "10:00");
+        values.put("deadline_date", "01/05/2000");
+        values.put("deadline_time", "11:00");
+        values.put("title", "Test1");
+
+        try{
+            db.insert(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, null, values);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+*/
+        //mydb = new EventDatabase(this);
+        SQLiteDatabase db = mydb.getReadableDatabase();
+
+        //WHERE clause arguments
+        String[] selectionArg = { getIntent().getStringExtra("accountID") };
+
+        String[] columns = {"*"};
+
+        String selection = "account_id=?";
+
+        Cursor cursor = null;
+        try{
+            cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns , selection, selectionArg, null, null, null);
+
+            if (cursor.moveToFirst()) {
+
+                while (cursor.isAfterLast() == false) {
+                    String temp_title = cursor.getString(cursor.getColumnIndex("title"));
+                    String temp_start_date = cursor.getString(cursor.getColumnIndex("start_date"));
+                    String temp_start_time = cursor.getString(cursor.getColumnIndex("start_time"));
+                    String temp_deadline_date = cursor.getString(cursor.getColumnIndex("deadline_date"));
+                    String temp_deadline_time = cursor.getString(cursor.getColumnIndex("deadline_time"));
+
+                    events.add(new SingleEventForList(temp_title, temp_start_date, temp_start_time, temp_deadline_date, temp_deadline_time) );
+                    cursor.moveToNext();
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void initializeAdapter(){
+        RVAdapter adapter = new RVAdapter(events);
+        rv.setAdapter(adapter);
     }
 
     @Override
@@ -51,5 +132,6 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+
     }
 }

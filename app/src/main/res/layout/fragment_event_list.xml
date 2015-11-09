@@ -7,6 +7,14 @@
     tools:context="cse.osu.edu.flexscheduler.EventListActivityFragment"
     android:id="@+id/event_list">
 
+    <android.support.v7.widget.RecyclerView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/rv"
+        >
+    </android.support.v7.widget.RecyclerView>
+
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_new_event"
         android:layout_width="wrap_content"
