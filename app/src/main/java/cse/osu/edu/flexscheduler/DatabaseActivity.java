@@ -60,6 +60,7 @@ public class DatabaseActivity extends Activity implements OnClickListener {
 				if(validLogin){
 					System.out.println("In Valid");
 					Intent i = new Intent(DatabaseActivity.this, SchedListActivity.class);
+                    i.putExtra("UID", uname);
 					startActivity(i);
 					finish();
 				}
@@ -83,6 +84,8 @@ public class DatabaseActivity extends Activity implements OnClickListener {
 	public boolean validateLogin(String uname, String pass, Context context) {
 		
 		mydb = new DbHelper(context);
+
+        // 필요한 DB를 가져오는 부분
 		SQLiteDatabase db = mydb.getReadableDatabase();
 		//SELECT
 		String[] columns = {"_id"};
@@ -96,6 +99,7 @@ public class DatabaseActivity extends Activity implements OnClickListener {
 		Cursor cursor = null;
 		try{
 		//SELECT _id FROM login WHERE username=uname AND password=pass
+        // 실제로 DB에 query를 해서 data를 가져오는 부분
 		cursor = db.query(DbHelper.SAKET_TABLE_NAME, columns, selection, selectionArgs, null, null, null);
 		
 		startManagingCursor(cursor);

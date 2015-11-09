@@ -69,17 +69,8 @@
         <activity android:name=".ImageActivity"
                   android:theme="@style/AppThemeTranslucent"/>
 
-
-<<<<<<< HEAD
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" >
-        </activity>
-
         <activity android:name="NewUserActivity"></activity>
         <activity android:name="AdminPage"></activity>
-=======
->>>>>>> refs/remotes/origin/document
     </application>
 
 </manifest>
