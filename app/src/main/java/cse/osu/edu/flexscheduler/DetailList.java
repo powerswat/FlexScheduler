@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
@@ -157,9 +158,18 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(DetailList.this, EventListActivity.class);
-                i.putExtra("accountID", getIntent().getStringExtra("accountID"));
-                startActivity(i);
+                if (detailListMode.equals("1")) {
+                    Intent i = new Intent(DetailList.this, EventListActivity.class);
+                    i.putExtra("accountID", getIntent().getStringExtra("accountID"));
+                    startActivity(i);
+                }
+                else if (detailListMode.equals("2")) {
+                    deleteEntry();
+
+                    Intent i = new Intent(DetailList.this, EventListActivity.class);
+                    i.putExtra("accountID", getIntent().getStringExtra("accountID"));
+                    startActivity(i);
+                }
             }
         });
 
@@ -180,7 +190,21 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAutocompleteView.setText("");
+                values.put("account_id", getIntent().getStringExtra("accountID"));
+                values.put("title", mTitleView.getText().toString());
+                values.put("start_date", startTxtDate.getText().toString());
+                values.put("start_time", startTxtTime.getText().toString());
+                values.put("duration", durationTxtHours.getText().toString() + ' ' + durationTxtMinutes.getText().toString());
+                values.put("deadline_date", deadlineTxtDate.getText().toString());
+                values.put("deadline_time", deadlineTxtTime.getText().toString());
+                values.put("participants", mParticipantView.getText().toString());
+                values.put("note", mNoteView.getText().toString());
+
+                addEntry(values);
+
+                Intent i = new Intent(DetailList.this, EventListActivity.class);
+                i.putExtra("accountID", getIntent().getStringExtra("accountID"));
+                startActivity(i);
             }
         });
 
@@ -229,6 +253,35 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }
         else if (detailListMode.equals("2")) {
             addButton.setVisibility(View.GONE);
+
+            mydb = new EventDatabase(this);
+            SQLiteDatabase db = mydb.getReadableDatabase();
+
+            //WHERE clause arguments
+            String[] selectionArg = {getIntent().getStringExtra("accountID"), getIntent().getStringExtra("eventID")};
+
+            String[] columns = {"*"};
+
+            String selection = "account_id=? AND event_id=?";
+
+            Cursor cursor = null;
+            try {
+                cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
+
+                if (cursor.moveToFirst()) {
+                    mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
+                    startTxtDate.setText(cursor.getString(cursor.getColumnIndex("start_date")));
+                    startTxtTime.setText(cursor.getString(cursor.getColumnIndex("start_time")));
+                    deadlineTxtDate.setText(cursor.getString(cursor.getColumnIndex("deadline_date")));
+                    deadlineTxtTime.setText(cursor.getString(cursor.getColumnIndex("deadline_time")));
+                    mParticipantView.setText(cursor.getString(cursor.getColumnIndex("participants")));
+                    mNoteView.setText(cursor.getString(cursor.getColumnIndex("note")));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            db.close();
             //String eventID = getIntent().getExtras().getString("eventID");
         }
 
@@ -472,6 +525,20 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }catch(Exception e){
             e.printStackTrace();
         }
+        db.close();
+    }
+
+    public void deleteEntry() {
+        mydb = new EventDatabase(this);
+        SQLiteDatabase db = mydb.getWritableDatabase();
+
+        try{
+            db.delete(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, "account_id = " + getIntent().getStringExtra("accountID") + " and event_id = " + getIntent().getStringExtra("eventID"), null);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        db.close();
     }
 
 }

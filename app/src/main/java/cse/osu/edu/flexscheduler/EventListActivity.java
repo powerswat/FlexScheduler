@@ -23,6 +23,7 @@ public class EventListActivity extends AppCompatActivity {
     private RecyclerView rv;
 
     EventDatabase mydb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +43,7 @@ public class EventListActivity extends AppCompatActivity {
             }
         });
 
-        rv=(RecyclerView)findViewById(R.id.rv);
+        rv = (RecyclerView) findViewById(R.id.rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
@@ -52,7 +53,7 @@ public class EventListActivity extends AppCompatActivity {
         initializeAdapter();
     }
 
-    private void initializeData(){
+    private void initializeData() {
         events = new ArrayList<>();
         mydb = new EventDatabase(this);
 
@@ -77,37 +78,39 @@ public class EventListActivity extends AppCompatActivity {
         SQLiteDatabase db = mydb.getReadableDatabase();
 
         //WHERE clause arguments
-        String[] selectionArg = { getIntent().getStringExtra("accountID") };
+        String[] selectionArg = {getIntent().getStringExtra("accountID")};
 
         String[] columns = {"*"};
 
         String selection = "account_id=?";
 
         Cursor cursor = null;
-        try{
-            cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns , selection, selectionArg, null, null, null);
+        try {
+            cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
 
             if (cursor.moveToFirst()) {
 
                 while (cursor.isAfterLast() == false) {
+                    String temp_event_id = cursor.getString(cursor.getColumnIndex("event_id"));
                     String temp_title = cursor.getString(cursor.getColumnIndex("title"));
                     String temp_start_date = cursor.getString(cursor.getColumnIndex("start_date"));
                     String temp_start_time = cursor.getString(cursor.getColumnIndex("start_time"));
                     String temp_deadline_date = cursor.getString(cursor.getColumnIndex("deadline_date"));
                     String temp_deadline_time = cursor.getString(cursor.getColumnIndex("deadline_time"));
 
-                    events.add(new SingleEventForList(temp_title, temp_start_date, temp_start_time, temp_deadline_date, temp_deadline_time) );
+                    events.add(new SingleEventForList(getIntent().getStringExtra("accountID"), temp_event_id, temp_title, temp_start_date, temp_start_time, temp_deadline_date, temp_deadline_time));
                     cursor.moveToNext();
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
+        db.close();
 
     }
 
-    private void initializeAdapter(){
+    private void initializeAdapter() {
         RVAdapter adapter = new RVAdapter(events);
         rv.setAdapter(adapter);
     }
@@ -133,5 +136,13 @@ public class EventListActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public void moveToDetailList(String i) {
+        Intent intent = new Intent(EventListActivity.this, DetailList.class);
+        intent.putExtra("detailListMode",String.valueOf(2));
+        intent.putExtra("accountID",getIntent().getStringExtra("accountID"));
+        intent.putExtra("eventID",i);
+        startActivity(intent);
     }
 }

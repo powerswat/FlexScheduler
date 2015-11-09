@@ -40,6 +40,8 @@ public class EventDatabase extends SQLiteOpenHelper {
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        db.close();
     }
 
     /* (non-Javadoc)

@@ -383,6 +383,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
             numberOfRows = cursor.getCount();
 
+            db.close();
             if(numberOfRows <= 0){
                 Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
                 return false;
@@ -392,6 +393,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return true;
             }
         }
+
+
     }
 
 
@@ -408,6 +411,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        db.close();
     }
 }
 
