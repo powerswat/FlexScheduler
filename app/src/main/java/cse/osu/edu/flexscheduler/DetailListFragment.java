@@ -105,7 +105,6 @@ public class DetailListFragment extends Fragment {
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
     }
 
 }

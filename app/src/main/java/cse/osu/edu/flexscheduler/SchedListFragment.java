@@ -28,7 +28,6 @@ public class SchedListFragment extends Fragment {
 
     /**
      * Required interface for hosting activities.
-     * Callbacks: Callee가 caller를 호출하는 것
      */
     public interface Callbacks {
         void onSchedSelected(Sched sched);

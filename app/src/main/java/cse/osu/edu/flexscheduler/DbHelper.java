@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package cse.osu.edu.flexscheduler;
 
@@ -14,22 +14,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DbHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "saket.db";
-
-	// Version이 변경되면 DB를 다시 update 함. 이 신호를 알려주는 용도로 사용
 	private static final int DATABASE_VERSION = 1;
-    public static final String SAKET_TABLE_NAME = "login";
+	public static final String SAKET_TABLE_NAME = "login";
 	private static final String SAKET_TABLE_CREATE =
-	                "CREATE TABLE " + SAKET_TABLE_NAME + "(" +
-	                "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
-	                "username TEXT NOT NULL, password TEXT NOT NULL, email TEXT NOT NULL);";
+			"CREATE TABLE " + SAKET_TABLE_NAME + "(" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+					"username TEXT NOT NULL, password TEXT NOT NULL, email TEXT NOT NULL);";
 	private static final String SAKET_DB_ADMIN = "INSERT INTO "+SAKET_TABLE_NAME+"values(1, admin, password, admin@gmail.com);";
-	
+
 
 	public DbHelper(Context context) {
-		
+
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		System.out.println("In constructor");
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -37,11 +35,11 @@ public class DbHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		
+
 		try{
-			// USER DB를 만드는 부분
+			//Create Database
 			db.execSQL(SAKET_TABLE_CREATE);
-			
+
 			//create admin account
 			db.execSQL(SAKET_DB_ADMIN);
 			System.out.println("In onCreate");
@@ -55,7 +53,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase arg0, int oldVersion, int newVersion) {
-		
+
 
 	}
 

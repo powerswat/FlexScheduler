@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package cse.osu.edu.flexscheduler;
 
@@ -34,53 +34,53 @@ public class AdminPage extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.admin);
-		
+
 		mAdminButton = (Button)findViewById(R.id.buttonLogin);
 		mAdminButton.setOnClickListener(this);
-		
+
 		mAdminCancel = (Button)findViewById(R.id.buttonCancel);
 		mAdminCancel.setOnClickListener(this);
 	}
-	
+
 	public void onClick(View v) {
-		
+
 		switch(v.getId()){
-		
-		case R.id.buttonLogin:
-			mPassword = (EditText)findViewById(R.id.editPassword);
-			
-			String pass = mPassword.getText().toString();
-			if(pass.equals("") || pass == null){
-				
-				Toast.makeText(getApplicationContext(), "Password Missing", Toast.LENGTH_SHORT).show();
-				
-			}else{
-				
-				if(pass.equals("admin")){
-					Toast.makeText(getApplicationContext(), "Retrieving Data", Toast.LENGTH_SHORT).show();
-					retrieveEntries();
+
+			case R.id.buttonLogin:
+				mPassword = (EditText)findViewById(R.id.editPassword);
+
+				String pass = mPassword.getText().toString();
+				if(pass.equals("") || pass == null){
+
+					Toast.makeText(getApplicationContext(), "Password Missing", Toast.LENGTH_SHORT).show();
+
 				}else{
-					Toast.makeText(getApplicationContext(), "Admin Login Failed", Toast.LENGTH_SHORT).show();
+
+					if(pass.equals("admin")){
+						Toast.makeText(getApplicationContext(), "Retrieving Data", Toast.LENGTH_SHORT).show();
+						retrieveEntries();
+					}else{
+						Toast.makeText(getApplicationContext(), "Admin Login Failed", Toast.LENGTH_SHORT).show();
+					}
 				}
-			}
-			
-			break;
-			
-		case R.id.buttonCancel:
-			Intent i = new Intent(AdminPage.this, DatabaseActivity.class);
-			startActivity(i);
-			finish();
-			break;
+
+				break;
+
+			case R.id.buttonCancel:
+				Intent i = new Intent(AdminPage.this, DatabaseActivity.class);
+				startActivity(i);
+				finish();
+				break;
 		}
 	}
-	
+
 	public void retrieveEntries(){
 		try{
-			
+
 			SQLiteDatabase db = myDb.getReadableDatabase();
-			
+
 			String[] columns = {"username","email"};
-			
+
 			Cursor cursor = db.query(DbHelper.SAKET_TABLE_NAME, columns, null, null, null, null, null);
 			if(cursor != null){
 				System.out.println("database showing");
@@ -88,7 +88,7 @@ public class AdminPage extends Activity implements OnClickListener {
 				showDatabase(cursor);
 			}
 			System.out.println("Cursor NuLL");
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -96,20 +96,20 @@ public class AdminPage extends Activity implements OnClickListener {
 
 	public void showDatabase(Cursor cursor) {
 		StringBuilder ret = new StringBuilder("Database Values\n\n");
-	    ret.append("\nUsername\t Email ID\n");
+		ret.append("\nUsername\t Email ID\n");
 		while (cursor.moveToNext()) {
-	      
-	      String uname = cursor.getString(0);
-	      
-	      String email = cursor.getString(1);
-	      ret.append(uname+"\t\t\t"+email+"\n");
-	    }
-		
+
+			String uname = cursor.getString(0);
+
+			String email = cursor.getString(1);
+			ret.append(uname+"\t\t\t"+email+"\n");
+		}
+
 		TextView result = new TextView(this);
 		result.setText(ret);
 		setContentView(result);
 	}
-	
+
 	public void onDestroy(){
 		super.onDestroy();
 		myDb.close();
@@ -122,7 +122,7 @@ public class AdminPage extends Activity implements OnClickListener {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		
+
 		Intent i = new Intent(AdminPage.this, DatabaseActivity.class);
 		startActivity(i);
 		finish();

@@ -3,6 +3,7 @@ package cse.osu.edu.flexscheduler;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import android.content.ContentValues;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
@@ -16,7 +17,6 @@ import android.view.MenuItem;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -63,10 +63,14 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
 
+    String detailListMode;
+    String eventID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_list);
+
 
         // For picking a place
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -95,8 +99,22 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 null);
         mAutocompleteView.setAdapter(mAdapter);
 
-        // Set up the 'clear text' button that clears the text in the autocomplete view
         Button clearPlaceButton = (Button) findViewById(R.id.autocomplete_clear);
+        Button clearTitleButton = (Button) findViewById(R.id.clear_title);
+        Button clearNoteButton = (Button) findViewById(R.id.clear_note);
+        Button clearParticipantButton = (Button) findViewById(R.id.clear_participant);
+        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        Button directionButton = (Button) findViewById(R.id.direction_button);
+        Button postponeButton = (Button) findViewById(R.id.postpone_button);
+        Button doneButton = (Button) findViewById(R.id.done_button);
+        Button addButton = (Button) findViewById(R.id.Add_button);
+
+        startTxtDate = (TextView)findViewById(R.id.start_date);
+        startTxtTime = (TextView)findViewById(R.id.start_time);
+        deadlineTxtDate = (TextView)findViewById(R.id.deadline_date);
+        deadlineTxtTime = (TextView)findViewById(R.id.deadline_time);
+
+        // Set up the 'clear text' button that clears the text in the autocomplete view
         clearPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +122,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-        Button clearTitleButton = (Button) findViewById(R.id.clear_title);
         clearTitleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +129,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-        Button clearNoteButton = (Button) findViewById(R.id.clear_note);
         clearNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,23 +136,19 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-        Button clearParticipantButton = (Button) findViewById(R.id.clear_participant);
         clearParticipantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mParticipantView.setText("");
             }
         });
-        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mAutocompleteView.setText("");
             }
         });
-
-        Button directionButton = (Button) findViewById(R.id.direction_button);
-        directionButton.setVisibility(View.GONE);
 
         directionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +157,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-        Button postponeButton = (Button) findViewById(R.id.postpone_button);
         postponeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +164,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-        Button doneButton = (Button) findViewById(R.id.done_button);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,19 +171,37 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-        Button addButton = (Button) findViewById(R.id.Add_button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAutocompleteView.setText("");
+            /*
+                ContentValues values = new ContentValues();
+                values.put("title", title);
+                values.put("", pass);
+                values.put("email", email);
+                values.put("title", title);
+                values.put("", pass);
+                values.put("email", email);
+                values.put("title", title);
+                values.put("", pass);
+                values.put("email", email);
+
+                String uname = mUsername.getText().toString();
+                String uname = mUsername.getText().toString();
+
+            */
             }
         });
 
-        startTxtDate = (TextView)findViewById(R.id.start_date);
-        startTxtTime = (TextView)findViewById(R.id.start_time);
-        deadlineTxtDate = (TextView)findViewById(R.id.deadline_date);
-        deadlineTxtTime = (TextView)findViewById(R.id.deadline_time);
 
+
+       /* detailListMode = getIntent().getExtras().getString("detailListMode");
+
+        if (detailListMode == "1") {
+            directionButton.setVisibility(View.GONE);
+            postponeButton.setVisibility(View.GONE);
+            cancelButton.setVisibility(View.GONE);
+*/
         Calendar cal = new GregorianCalendar();
         startYear =  deadlineYear = mYear = cal.get(Calendar.YEAR);
         startMonth =  deadlineMonth = mMonth = cal.get(Calendar.MONTH);
@@ -183,12 +211,16 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
         startTxtDate.setText(String.format("%d/%d/%d", mMonth+1, mDay, mYear));
         startTxtTime.setText(String.format("%02d:%02d", mHour, mMinute));
-        deadlineTxtDate.setText(String.format("%d/%d/%d", mMonth+1, mDay, mYear));
+        deadlineTxtDate.setText(String.format("%d/%d/%d", mMonth + 1, mDay, mYear));
         deadlineTxtTime.setText(String.format("%02d:%02d", mHour, mMinute));
-
+/*
+        }
+        else if (detailListMode == "2") {
+            addButton.setVisibility(View.GONE);
+            //String eventID = getIntent().getExtras().getString("eventID");
+        }
+*/
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -235,8 +267,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 break;*/
             /*case R.id.test_place:
                 mapClick();
-                //Intent i = new Intent(DetailList.this, MapsActivity.class);// jihoon: temp change
-                //startActivity(i);
                 break;*/
         }
     }
@@ -291,13 +321,13 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
 
     void startUpdateNow(){
-            startTxtDate.setText(String.format("%d/%d/%d", startMonth + 1, startDay, startYear));
-            startTxtTime.setText(String.format("%02d:%02d", startHour, startMinute));
+        startTxtDate.setText(String.format("%d/%d/%d", startMonth + 1, startDay, startYear));
+        startTxtTime.setText(String.format("%02d:%02d", startHour, startMinute));
     }
 
     void deadlineUpdateNow(){
-            deadlineTxtDate.setText(String.format("%d/%d/%d", deadlineMonth+1, deadlineDay, deadlineYear));
-            deadlineTxtTime.setText(String.format("%02d:%02d", deadlineHour, deadlineMinute));
+        deadlineTxtDate.setText(String.format("%d/%d/%d", deadlineMonth+1, deadlineDay, deadlineYear));
+        deadlineTxtTime.setText(String.format("%02d:%02d", deadlineHour, deadlineMinute));
     }
 
 
@@ -335,7 +365,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
 
             //Toast.makeText(getApplicationContext(), "Clicked: " + primaryText,
-             //       Toast.LENGTH_SHORT).show();
+            //       Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
 
 
