@@ -228,6 +228,13 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        Calendar cal = new GregorianCalendar();
+        startYear =  deadlineYear = mYear = cal.get(Calendar.YEAR);
+        startMonth =  deadlineMonth = mMonth = cal.get(Calendar.MONTH);
+        startDay =  deadlineDay = mDay = cal.get(Calendar.DAY_OF_MONTH);
+        startHour =  deadlineHour = mHour = cal.get(Calendar.HOUR_OF_DAY);
+        startMinute =  deadlineMinute = mMinute = cal.get(Calendar.MINUTE);
+
 
 
         detailListMode = getIntent().getExtras().getString("detailListMode");
@@ -237,17 +244,11 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             postponeButton.setVisibility(View.GONE);
             doneButton.setVisibility(View.GONE);
 
-            Calendar cal = new GregorianCalendar();
-            startYear =  deadlineYear = mYear = cal.get(Calendar.YEAR);
-            startMonth =  deadlineMonth = mMonth = cal.get(Calendar.MONTH);
-            startDay =  deadlineDay = mDay = cal.get(Calendar.DAY_OF_MONTH);
-            startHour =  deadlineHour = mHour = cal.get(Calendar.HOUR_OF_DAY);
-            startMinute =  deadlineMinute = mMinute = cal.get(Calendar.MINUTE);
 
             startTxtDate.setText(String.format("%d/%d/%d", mMonth+1, mDay, mYear));
             startTxtTime.setText(String.format("%02d:%02d", mHour, mMinute));
             deadlineTxtDate.setText(String.format("%d/%d/%d", mMonth + 1, mDay, mYear));
-            deadlineTxtTime.setText(String.format("%02d:%02d", mHour, mMinute));
+            deadlineTxtTime.setText(String.format("%02d:%02d", mHour+1, mMinute));
 
         }
         else if (detailListMode.equals("2")) {
@@ -264,6 +265,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             String selection = "account_id=? AND event_id=?";
 
             Cursor cursor = null;
+
+            String latitude;
+            String longitude;
+
             try {
                 cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
 
@@ -278,11 +283,25 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                     deadlineTxtTime.setText(cursor.getString(cursor.getColumnIndex("deadline_time")));
                     mParticipantView.setText(cursor.getString(cursor.getColumnIndex("participants")));
                     mNoteView.setText(cursor.getString(cursor.getColumnIndex("note")));
+                    mAutocompleteView.setText(cursor.getString(cursor.getColumnIndex("place")));
+                    latitude = cursor.getString(cursor.getColumnIndex("place_latitude"));
+                    longitude = cursor.getString(cursor.getColumnIndex("place_longitude"));
+
+                    //LatLng latLng = new LatLng(latitude, longitude);
+                    // FragmentManager fm = getSupportFragmentManager();
+                    // DetailListFragment detailFragment = (DetailListFragment)fm.findFragmentById(R.id.detail_list_fragment);
+                    //detailFragment.changeMap(latLng);
+                    //Toast.makeText(getApplicationContext(), "Clicked: "+ String.valueOf(latitude_long),
+                    //        Toast.LENGTH_SHORT).show();
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            //long latitude_long = Long.getLong("-2.133333");
+            //Toast.makeText(getApplicationContext(), "Clicked: "+ latitude_long,
+            //               Toast.LENGTH_SHORT).show();
             db.close();
             //String eventID = getIntent().getExtras().getString("eventID");
         }
@@ -464,7 +483,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
                 values.put("place", place.getName().toString());
                 values.put("place_latitude", String.valueOf(place.getLatLng().latitude));
-                values.put("place_longitude", String.valueOf(place.getLatLng().longitude));
+                values.put("place_longitude",String.valueOf(place.getLatLng().longitude));
+
+                Toast.makeText(getApplicationContext(), "Clicked: " + String.valueOf(place.getLatLng().longitude),
+                        Toast.LENGTH_SHORT).show();
             }
             else {
                 Toast.makeText(getApplicationContext(), "Clicked: " + place.getLatLng(),
