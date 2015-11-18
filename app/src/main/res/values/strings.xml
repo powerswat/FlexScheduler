@@ -59,4 +59,5 @@
     <string name="buttonShowAll">All Users</string>
     <string name="adminTitle">Admin Login</string>
     <string name="title_activity_event_list">EventListActivity</string>
+    <string name="title_activity_alarm_dialog">AlarmDialog</string>
  </resources>

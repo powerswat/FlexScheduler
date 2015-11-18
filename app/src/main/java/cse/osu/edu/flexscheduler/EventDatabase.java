@@ -8,16 +8,16 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by Jihoon Yun on 11/8/2015.
  */
 public class EventDatabase extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "flextest2.db";
+    private static final String DATABASE_NAME = "flextest4.db";
     private static final int DATABASE_VERSION = 1;
-    public static final String FLEX_SCHEDULER_TABLE_NAME = "flextest2";
+    public static final String FLEX_SCHEDULER_TABLE_NAME = "test4";
     private static final String FLEX_SCHEDULER_TABLE_CREATE =
             "CREATE TABLE " + FLEX_SCHEDULER_TABLE_NAME + "(" +
                     "event_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
                     "account_id TEXT NOT NULL," +
-                    "title TEXT NOT NULL, start_date TEXT NOT NULL," +
-                    "start_time TEXT NOT NULL, duration," +
-                    "deadline_date TEXT NOT NULL, deadline_time TEXT NOT NULL," +
+                    "title TEXT NOT NULL, start_date_time TEXT NOT NULL," +
+                    "duration TEXT NOT NULL," +
+                    "deadline_date_time TEXT NOT NULL, " +
                     "place, place_latitude, place_longitude, participants, note" +
                     ");";
     public EventDatabase(Context context) {
@@ -41,7 +41,7 @@ public class EventDatabase extends SQLiteOpenHelper {
             e.printStackTrace();
         }
 
-        db.close();
+      //  db.close();
     }
 
     /* (non-Javadoc)

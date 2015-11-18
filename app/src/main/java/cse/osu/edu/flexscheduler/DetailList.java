@@ -4,7 +4,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -42,22 +45,12 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 public class DetailList extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener{
 
-    int startYear, startMonth, startDay, startHour, startMinute;
-    int deadlineYear, deadlineMonth, deadlineDay, deadlineHour,  deadlineMinute;
-    int mYear, mMonth, mDay, mHour, mMinute;
 
-    TextView startTxtDate;
-    TextView startTxtTime;
-    TextView deadlineTxtDate;
-    TextView deadlineTxtTime;
-    TextView durationTxtMinutes;
-    TextView durationTxtHours;
 
+    TextView startTxtDate, startTxtTime, deadlineTxtDate, deadlineTxtTime, durationTxtMinutes, durationTxtHours;
 
     ContentValues values = new ContentValues();
     EventDatabase mydb = null;
-
-    private static final int REQUEST_PLACE_PICKER = 1;
 
     public static final String TAG = "SampleActivityBase";
 
@@ -68,23 +61,29 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     private TextView mTitleView;
     private TextView mNoteView;
     private TextView mParticipantView;
-    private TextView mPlaceDetailsText;
-    private TextView mPlaceDetailsAttribution;
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
-
 
     double latitude = 40.001626; // if GPS is not working, the current latitude and longitude are set up near Ohio Stadium
     double longitude = -83.019456;
 
     String detailListMode;
-    String eventID;
+    long event_ID = -1;
+
+    PendingIntent pendingIntent;
+
+    Calendar current_calendar = new GregorianCalendar();
+    Calendar start_date_calendar = Calendar.getInstance();
+    Calendar deadline_date_calendar = Calendar.getInstance();
+
+    int start_year, start_month, start_day, start_hour, start_minute;
+    int deadline_year, deadline_month, deadline_day, deadline_hour,  deadline_minute;
+    int current_year, current_month, current_day, current_hour, current_minute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_list);
-
 
         // For picking a place
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -98,14 +97,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         mNoteView= (TextView)findViewById(R.id.note);
         mParticipantView = (TextView)findViewById(R.id.participant);
 
-        //mAutocompleteView = (AutoCompleteTextView)findViewById(R.id.autocomplete_places);
-
-        // Register a listener that receives callbacks when a suggestion has been selected
+          // Register a listener that receives callbacks when a suggestion has been selected
         mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
-
-        // Retrieve the TextViews that will display details and attributions of the selected place.
-        //mPlaceDetailsText = (TextView) findViewById(R.id.place_details);
-        //mPlaceDetailsAttribution = (TextView) findViewById(R.id.place_attribution);
 
         // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
         // the entire world.
@@ -130,6 +123,24 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         durationTxtHours = (TextView)findViewById(R.id.duration_hours);
         durationTxtMinutes = (TextView)findViewById(R.id.duration_minutes);
 
+        current_year = current_calendar.get(Calendar.YEAR);
+        current_month = current_calendar.get(Calendar.MONTH);
+        current_day = current_calendar.get(Calendar.DAY_OF_MONTH);
+        current_hour = current_calendar.get(Calendar.HOUR_OF_DAY);
+        current_minute = current_calendar.get(Calendar.MINUTE);
+
+        detailListMode = getIntent().getExtras().getString("detailListMode");
+
+        if (detailListMode.equals("1")) {
+            directionButton.setVisibility(View.GONE);
+            postponeButton.setVisibility(View.GONE);
+            doneButton.setVisibility(View.GONE);
+            initializeNewDetailList();
+        }
+        else if (detailListMode.equals("2")) {
+            addButton.setVisibility(View.GONE);
+            initializeExistedDetailList();
+        }
 
         // Set up the 'clear text' button that clears the text in the autocomplete view
         clearPlaceButton.setOnClickListener(new View.OnClickListener() {
@@ -170,7 +181,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 }
                 else if (detailListMode.equals("2")) {
                     deleteEntry();
-
+                    cancelAlarm();
                     Intent i = new Intent(DetailList.this, EventListActivity.class);
                     i.putExtra("accountID", getIntent().getStringExtra("accountID"));
                     startActivity(i);
@@ -199,147 +210,16 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                values.put("title", mTitleView.getText().toString());
-                values.put("start_date", startTxtDate.getText().toString());
-                values.put("start_time", startTxtTime.getText().toString());
-                values.put("duration", durationTxtHours.getText().toString() + ' ' + durationTxtMinutes.getText().toString());
-                values.put("deadline_date", deadlineTxtDate.getText().toString());
-                values.put("deadline_time", deadlineTxtTime.getText().toString());
-                values.put("participants", mParticipantView.getText().toString());
-                values.put("note", mNoteView.getText().toString());
-
-                if (addAlarm()) {
-                    updateEntry(values);
-                    Intent i = new Intent(DetailList.this, EventListActivity.class);
-                    i.putExtra("accountID", getIntent().getStringExtra("accountID"));
-                    startActivity(i);
-                }
+                updateValuesToDatabase();
             }
         });
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                values.put("account_id", getIntent().getStringExtra("accountID"));
-                values.put("title", mTitleView.getText().toString());
-                values.put("start_date", startTxtDate.getText().toString());
-                values.put("start_time", startTxtTime.getText().toString());
-                values.put("duration", durationTxtHours.getText().toString() + ' ' + durationTxtMinutes.getText().toString());
-                values.put("deadline_date", deadlineTxtDate.getText().toString());
-                values.put("deadline_time", deadlineTxtTime.getText().toString());
-                values.put("participants", mParticipantView.getText().toString());
-                values.put("note", mNoteView.getText().toString());
-
-                if (addAlarm()) {
-                    addEntry(values);
-                    Intent i = new Intent(DetailList.this, EventListActivity.class);
-                    i.putExtra("accountID", getIntent().getStringExtra("accountID"));
-                    startActivity(i);
-                }
+                addValuesToDatabase();
             }
         });
-
-        Calendar cal = new GregorianCalendar();
-        /*startYear =  deadlineYear = mYear = cal.get(Calendar.YEAR);
-        startMonth =  deadlineMonth = mMonth = cal.get(Calendar.MONTH);
-        startDay =  deadlineDay = mDay = cal.get(Calendar.DAY_OF_MONTH);
-        startHour =  deadlineHour = mHour = cal.get(Calendar.HOUR_OF_DAY);
-        startMinute =  deadlineMinute = mMinute = cal.get(Calendar.MINUTE);
-*/
-        mYear = cal.get(Calendar.YEAR);
-        mMonth = cal.get(Calendar.MONTH);
-        mDay = cal.get(Calendar.DAY_OF_MONTH);
-        mHour = cal.get(Calendar.HOUR_OF_DAY);
-        mMinute = cal.get(Calendar.MINUTE);
-
-        detailListMode = getIntent().getExtras().getString("detailListMode");
-
-        if (detailListMode.equals("1")) {
-            directionButton.setVisibility(View.GONE);
-            postponeButton.setVisibility(View.GONE);
-            doneButton.setVisibility(View.GONE);
-
-
-            startYear =  deadlineYear = mYear;
-            startMonth =  deadlineMonth = mMonth;
-            startDay =  deadlineDay = mDay;
-            startHour =  deadlineHour = mHour;
-            startMinute =  deadlineMinute = mMinute;
-
-            startTxtDate.setText(String.format("%d/%d/%d", mMonth+1, mDay, mYear));
-            startTxtTime.setText(String.format("%02d:%02d", mHour, mMinute));
-            deadlineTxtDate.setText(String.format("%d/%d/%d", mMonth+1, mDay, mYear));
-            deadlineTxtTime.setText(String.format("%02d:%02d", mHour, mMinute));
-
-        }
-        else if (detailListMode.equals("2")) {
-            addButton.setVisibility(View.GONE);
-
-            mydb = new EventDatabase(this);
-            SQLiteDatabase db = mydb.getReadableDatabase();
-
-            //WHERE clause arguments
-            String[] selectionArg = {getIntent().getStringExtra("accountID"), getIntent().getStringExtra("eventID")};
-
-            String[] columns = {"*"};
-
-            String selection = "account_id=? AND event_id=?";
-
-            Cursor cursor = null;
-
-            try {
-                cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
-
-                if (cursor.moveToFirst()) {
-                    String textStr[] = cursor.getString(cursor.getColumnIndex("duration")).split("\\s+");
-                    mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
-                    startTxtDate.setText(cursor.getString(cursor.getColumnIndex("start_date")));
-                    startTxtTime.setText(cursor.getString(cursor.getColumnIndex("start_time")));
-                    durationTxtHours.setText(textStr[0]);
-                    durationTxtMinutes.setText(textStr[1]);
-                    deadlineTxtDate.setText(cursor.getString(cursor.getColumnIndex("deadline_date")));
-                    deadlineTxtTime.setText(cursor.getString(cursor.getColumnIndex("deadline_time")));
-                    mParticipantView.setText(cursor.getString(cursor.getColumnIndex("participants")));
-                    mNoteView.setText(cursor.getString(cursor.getColumnIndex("note")));
-                    mAutocompleteView.setText(cursor.getString(cursor.getColumnIndex("place")));
-                    latitude = cursor.getDouble(cursor.getColumnIndex("place_latitude"));
-                    longitude = cursor.getDouble(cursor.getColumnIndex("place_longitude"));
-
-                    String startDateArray [] = cursor.getString(cursor.getColumnIndex("start_date")).split("[/]");
-                    String startTimeArray [] = cursor.getString(cursor.getColumnIndex("start_time")).split("[:]");
-                    String deadlineDateArray [] = cursor.getString(cursor.getColumnIndex("deadline_date")).split("[/]");
-                    String deadlineTimeArray [] = cursor.getString(cursor.getColumnIndex("deadline_time")).split("[:]");
-
-                    startMonth = Integer.valueOf(startDateArray[0]) - 1;
-                    startDay =  Integer.valueOf(startDateArray[1]);
-                    startYear =  Integer.valueOf(startDateArray[2]);
-                    startHour = Integer.valueOf(startTimeArray[0]);
-                    startMinute = Integer.valueOf(startTimeArray[1]);
-                    deadlineMonth = Integer.valueOf(deadlineDateArray[0]) - 1;
-                    deadlineDay = Integer.valueOf(deadlineDateArray[1]);
-                    deadlineYear = Integer.valueOf(deadlineDateArray[2]);
-                    deadlineHour = Integer.valueOf(deadlineTimeArray[0]);
-                    deadlineMinute = Integer.valueOf(deadlineTimeArray[1]);
-
-                    LatLng latLng = new LatLng(latitude, longitude);
-                    FragmentManager fm = getSupportFragmentManager();
-                    DetailListFragment detailFragment = (DetailListFragment)fm.findFragmentById(R.id.detail_list_fragment);
-                    detailFragment.changeMap(latLng);
-                    //Toast.makeText(getApplicationContext(), "Clicked: "+ String.valueOf(latitude),
-                    //        Toast.LENGTH_SHORT).show();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //long latitude_long = Long.getLong("-2.133333");
-            //Toast.makeText(getApplicationContext(), "Clicked: "+ latitude_long,
-            //               Toast.LENGTH_SHORT).show();
-            db.close();
-            //String eventID = getIntent().getExtras().getString("eventID");
-        }
-
     }
 
     @Override
@@ -364,20 +244,19 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         return super.onOptionsItemSelected(item);
     }
 
-
     public void mOnClick(View v) {
         switch(v.getId()) {
             case R.id.start_date:
-                new DatePickerDialog(DetailList.this,startDateSetListener, startYear, startMonth, startDay).show();
+                new DatePickerDialog(DetailList.this,startDateSetListener, start_year, start_month, start_day).show();
                 break;
             case R.id.start_time:
-                new TimePickerDialog(DetailList.this,startTimeSetListener, startHour, startMinute, true).show();
+                new TimePickerDialog(DetailList.this,startTimeSetListener, start_hour, start_minute, true).show();
                 break;
             case R.id.deadline_date:
-                new DatePickerDialog(DetailList.this,deadlineDateSetListener, deadlineYear, deadlineMonth, deadlineDay).show();
+                new DatePickerDialog(DetailList.this,deadlineDateSetListener, deadline_year, deadline_month, deadline_day).show();
                 break;
             case R.id.deadline_time:
-                new TimePickerDialog(DetailList.this,deadlineTimeSetListener, deadlineHour, deadlineMinute, true).show();
+                new TimePickerDialog(DetailList.this,deadlineTimeSetListener, deadline_hour, deadline_minute, true).show();
                 break;
         }
     }
@@ -387,22 +266,20 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
                 {
-                    startYear = year;
-                    startMonth = monthOfYear;
-                    startDay = dayOfMonth;
-
-                    startUpdateNow();
+                    start_year = year;
+                    start_month = monthOfYear;
+                    start_day = dayOfMonth;
+                    updateStartDateTime();
                 }
             };
 
     TimePickerDialog.OnTimeSetListener startTimeSetListener =
             new TimePickerDialog.OnTimeSetListener() {
-
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    startHour = hourOfDay;
-                    startMinute = minute;
-                    startUpdateNow();
+                    start_hour = hourOfDay;
+                    start_minute = minute;
+                    updateStartDateTime();
                 }
             };
 
@@ -411,10 +288,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
                 {
-                    deadlineYear = year;
-                    deadlineMonth = monthOfYear;
-                    deadlineDay = dayOfMonth;
-                    deadlineUpdateNow();
+                    deadline_year = year;
+                    deadline_month = monthOfYear;
+                    deadline_day = dayOfMonth;
+                    updateDeadlineDateTime();
                 }
             };
 
@@ -423,24 +300,11 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    deadlineHour = hourOfDay;
-                    deadlineMinute = minute;
-
-                    deadlineUpdateNow();
+                    deadline_hour = hourOfDay;
+                    deadline_minute = minute;
+                    updateDeadlineDateTime();
                 }
             };
-
-
-    void startUpdateNow(){
-            startTxtDate.setText(String.format("%d/%d/%d", startMonth+1, startDay, startYear));
-            startTxtTime.setText(String.format("%02d:%02d", startHour, startMinute));
-    }
-
-    void deadlineUpdateNow(){
-            deadlineTxtDate.setText(String.format("%d/%d/%d", deadlineMonth+1, deadlineDay, deadlineYear));
-            deadlineTxtTime.setText(String.format("%02d:%02d", deadlineHour, deadlineMinute));
-    }
-
 
     /**
      * Listener that handles selections from suggestions from the AutoCompleteTextView that
@@ -474,12 +338,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                     .getPlaceById(mGoogleApiClient, placeId);
             placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
 
-
-            //Toast.makeText(getApplicationContext(), "Clicked: " + primaryText,
-             //       Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
-
-
         }
     };
 
@@ -509,42 +368,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 values.put("place", place.getName().toString());
                 values.put("place_latitude", String.valueOf(place.getLatLng().latitude));
                 values.put("place_longitude",String.valueOf(place.getLatLng().longitude));
-
-                //Toast.makeText(getApplicationContext(), "Clicked: " + String.valueOf(place.getLatLng().longitude),
-                //        Toast.LENGTH_SHORT).show();
             }
-            else {
-                //Toast.makeText(getApplicationContext(), "Clicked: " + place.getLatLng(),
-                //        Toast.LENGTH_SHORT).show();
-            }
-            // Format details of the place for display and show it in a TextView.
-            /*mPlaceDetailsText.setText(formatPlaceDetails(getResources(), place.getName(),
-                    place.getId(), place.getAddress(), place.getPhoneNumber(),
-                    place.getWebsiteUri()));
-              */
-            // Display the third party attributions if set.
-            final CharSequence thirdPartyAttribution = places.getAttributions();
-            /*if (thirdPartyAttribution == null) {
-                mPlaceDetailsAttribution.setVisibility(View.GONE);
-            } else {
-                mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
-                mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
-            }*/
-
             Log.i(TAG, "Place details received: " + place.getName());
 
             places.release();
         }
     };
-
-    private static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
-                                              CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
-        Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber,
-                websiteUri));
-        return Html.fromHtml(res.getString(R.string.place_details, name, id, address, phoneNumber,
-                websiteUri));
-
-    }
 
     /**
      * Called when the Activity could not connect to Google Play services and the auto manager
@@ -565,15 +394,143 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 Toast.LENGTH_SHORT).show();
     }
 
+
+
+    public void initializeNewDetailList() {
+            start_year =  deadline_year = current_year;
+            start_month =  deadline_month = current_month;
+            start_day =  deadline_day = current_day;
+            start_hour =  deadline_hour = current_hour;
+            start_minute =  deadline_minute = current_minute;
+
+            updateStartDateTime();
+            updateDeadlineDateTime();
+    }
+
+    public void initializeExistedDetailList() {
+        event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
+
+        mydb = new EventDatabase(this);
+        SQLiteDatabase db = mydb.getReadableDatabase();
+
+        //WHERE clause arguments
+        String[] selectionArg = {getIntent().getStringExtra("accountID"), getIntent().getStringExtra("eventID")};
+
+        String[] columns = {"*"};
+
+        String selection = "account_id=? AND event_id=?";
+
+        Cursor cursor;
+
+        try {
+            cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
+            if (cursor.moveToFirst()) {
+                extractValuesFromDatabase(cursor);
+                extractStringToDateTimeFromDatabase(cursor);
+                updateStartDateTime();
+                updateDeadlineDateTime();
+
+                LatLng latLng = new LatLng(latitude, longitude);
+                FragmentManager fm = getSupportFragmentManager();
+                DetailListFragment detailFragment = (DetailListFragment)fm.findFragmentById(R.id.detail_list_fragment);
+                detailFragment.changeMap(latLng);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        db.close();
+    }
+
+    void updateStartDateTime(){
+        startTxtDate.setText(String.format("%d-%02d-%02d", start_year, start_month+1, start_day));
+        startTxtTime.setText(String.format("%02d:%02d", start_hour, start_minute));
+    }
+
+    void updateDeadlineDateTime(){
+        deadlineTxtDate.setText(String.format("%d-%02d-%02d", deadline_year, deadline_month+1, deadline_day));
+        deadlineTxtTime.setText(String.format("%02d:%02d", deadline_hour, deadline_minute));
+    }
+
+    void extractStringToDateTimeFromDatabase(Cursor cursor) {
+        String startDateTimeArray [] = cursor.getString(cursor.getColumnIndex("start_date_time")).split("[T]");
+        String deadlineDateTimeArray [] = cursor.getString(cursor.getColumnIndex("deadline_date_time")).split("[T]");
+        String startDateArray[] = startDateTimeArray[0].split("[-]");
+        String startTimeArray[] = startDateTimeArray[1].split("[:]");
+        String deadlineDateArray[] = deadlineDateTimeArray[0].split("[-]");
+        String deadlineTimeArray[] = deadlineDateTimeArray[1].split("[:]");
+
+        start_year = Integer.valueOf(startDateArray[0]);
+        start_month =  Integer.valueOf(startDateArray[1]) -1;
+        start_day =  Integer.valueOf(startDateArray[2]);
+        start_hour = Integer.valueOf(startTimeArray[0]);
+        start_minute = Integer.valueOf(startTimeArray[1]);
+
+        deadline_year = Integer.valueOf(deadlineDateArray[0]);
+        deadline_month = Integer.valueOf(deadlineDateArray[1]) -1;
+        deadline_day = Integer.valueOf(deadlineDateArray[2]);
+        deadline_hour = Integer.valueOf(deadlineTimeArray[0]);
+        deadline_minute = Integer.valueOf(deadlineTimeArray[1]);
+    }
+
+    void extractValuesFromDatabase(Cursor cursor) {
+        String textStr[] = cursor.getString(cursor.getColumnIndex("duration")).split("\\s+");
+        mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
+        durationTxtHours.setText(textStr[0]);
+        durationTxtMinutes.setText(textStr[1]);
+        mParticipantView.setText(cursor.getString(cursor.getColumnIndex("participants")));
+        mNoteView.setText(cursor.getString(cursor.getColumnIndex("note")));
+        mAutocompleteView.setText(cursor.getString(cursor.getColumnIndex("place")));
+        latitude = cursor.getDouble(cursor.getColumnIndex("place_latitude"));
+        longitude = cursor.getDouble(cursor.getColumnIndex("place_longitude"));
+    }
+
+    void addValuesToDatabase() {
+        values.put("account_id", getIntent().getStringExtra("accountID"));
+        values.put("title", mTitleView.getText().toString());
+        values.put("start_date_time", startTxtDate.getText().toString() + 'T' + startTxtTime.getText().toString());
+        values.put("duration", durationTxtHours.getText().toString() + ' ' + durationTxtMinutes.getText().toString());
+        values.put("deadline_date_time", deadlineTxtDate.getText().toString() + 'T' + deadlineTxtTime.getText().toString());
+        values.put("participants", mParticipantView.getText().toString());
+        values.put("note", mNoteView.getText().toString());
+
+        if (checkRangeBetweenStartAndDeadline()) {
+            addEntry(values);
+            addAlarm();
+            Intent i = new Intent(DetailList.this, EventListActivity.class);
+            i.putExtra("accountID", getIntent().getStringExtra("accountID"));
+            startActivity(i);
+        }
+    }
+
+    void updateValuesToDatabase() {
+        values.put("title", mTitleView.getText().toString());
+        values.put("start_date_time", startTxtDate.getText().toString() + 'T' + startTxtTime.getText().toString());
+        values.put("duration", durationTxtHours.getText().toString() + ' ' + durationTxtMinutes.getText().toString());
+        values.put("deadline_date_time", deadlineTxtDate.getText().toString() + 'T' + deadlineTxtTime.getText().toString());
+        values.put("participants", mParticipantView.getText().toString());
+        values.put("note", mNoteView.getText().toString());
+
+        if (checkRangeBetweenStartAndDeadline()) {
+            updateEntry(values);
+            updateAlarm();
+            Intent i = new Intent(DetailList.this, EventListActivity.class);
+            i.putExtra("accountID", getIntent().getStringExtra("accountID"));
+            startActivity(i);
+        }
+    }
+
     public void addEntry(ContentValues values){
         mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getWritableDatabase();
 
         try{
-            db.insert(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, null, values);
+            event_ID = db.insert(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, null, values);
         }catch(Exception e){
             e.printStackTrace();
         }
+
         db.close();
     }
 
@@ -602,43 +559,59 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }catch(Exception e){
             e.printStackTrace();
         }
-
         db.close();
     }
 
-    public boolean addAlarm() {
-        Calendar current = Calendar.getInstance();
-        Calendar startDate = Calendar.getInstance();
-        Calendar deadlineDate = Calendar.getInstance();
+    public void addAlarm() {
+        Toast.makeText(getApplicationContext(),
+                startTxtDate.getText() + " " + event_ID,
+        Toast.LENGTH_LONG).show();
 
-       // Toast.makeText(getApplicationContext(),
-       //         startTxtDate.getText() + " " + startTxtTime.getText(),
-       // Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
+        intent.putExtra("accountID", getIntent().getStringExtra("accountID"));
+        intent.putExtra("eventID",  String.valueOf(event_ID));
+        pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, start_date_calendar.getTimeInMillis(), pendingIntent);
+    }
 
-        current.set(mYear, mMonth, mDay, mHour, mMinute, 00);
-        startDate.set(startYear, startMonth, startDay, startHour, startMinute, 00);
-        deadlineDate.set(deadlineYear, deadlineMonth, deadlineDay, deadlineHour, deadlineMinute, 00);
+    public void updateAlarm() {
+        Toast.makeText(getApplicationContext(),
+                startTxtDate.getText() + " " + event_ID,
+                Toast.LENGTH_LONG).show();
 
-        if(startDate.compareTo(current) < 0){
+        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
+        intent.putExtra("accountID", getIntent().getStringExtra("accountID"));
+        intent.putExtra("eventID",  String.valueOf(event_ID));
+        pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, start_date_calendar.getTimeInMillis(), pendingIntent);
+    }
+
+    public void cancelAlarm() {
+        Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent,  PendingIntent.FLAG_CANCEL_CURRENT) ;
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        manager.cancel(pendingIntent);
+        Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean checkRangeBetweenStartAndDeadline() {
+        start_date_calendar.set(start_year, start_month, start_day, start_hour, start_minute, 00);
+        deadline_date_calendar.set(deadline_year, deadline_month, deadline_day, deadline_hour, deadline_minute, 00);
+
+        if(start_date_calendar.compareTo(current_calendar) < 0){
             //The set Date/Time already passed
             Toast.makeText(getApplicationContext(),
                     "Invalid Date/Time",
                     Toast.LENGTH_LONG).show();
-        }else if (deadlineDate.compareTo(startDate) < 0) {
+        }else if (deadline_date_calendar.compareTo(start_date_calendar) < 0) {
             Toast.makeText(getApplicationContext(),
                     "Deadline is earlier than start",
                     Toast.LENGTH_LONG).show();
         }else {
-            setAlarm(startDate);
             return true;
         }
         return false;
-    }
-
-    public void setAlarm(Calendar startDate) {
-
-    }
-    public void cancelAlarm() {
-
     }
 }

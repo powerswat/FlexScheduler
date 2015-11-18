@@ -80,14 +80,19 @@ public class DetailListFragment extends Fragment {
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
+        double latitude = 40.001626; // if GPS is not working, the current latitude and longitude are set up near Ohio Stadium
+        double longitude = -83.019456;
+
+
+        if (myLocation != null) {
+            latitude = myLocation.getLatitude();
+
+            longitude = myLocation.getLongitude();
+        }
+
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
-
-        // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);

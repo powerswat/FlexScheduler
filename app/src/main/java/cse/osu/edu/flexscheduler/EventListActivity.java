@@ -62,10 +62,10 @@ public class EventListActivity extends AppCompatActivity {
 
         ContentValues values = new ContentValues();
         values.put("account_id", getIntent().getStringExtra("accountID"));
-        values.put("start_date", "01/01/2000");
-        values.put("start_time", "10:00");
-        values.put("deadline_date", "01/05/2000");
-        values.put("deadline_time", "11:00");
+        values.put("start_date_time", "2015-11-17T10:00");
+        values.put("duration", "10 00");
+        values.put("deadline_date_time", "2015-11-17T10:00");
+       // values.put("deadline_time", "11:00");
         values.put("title", "Test1");
 
         try{
@@ -86,19 +86,17 @@ public class EventListActivity extends AppCompatActivity {
 
         Cursor cursor = null;
         try {
-            cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null, null);
+            cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null,  "start_date_time  ASC");
 
             if (cursor.moveToFirst()) {
 
                 while (cursor.isAfterLast() == false) {
                     String temp_event_id = cursor.getString(cursor.getColumnIndex("event_id"));
                     String temp_title = cursor.getString(cursor.getColumnIndex("title"));
-                    String temp_start_date = cursor.getString(cursor.getColumnIndex("start_date"));
-                    String temp_start_time = cursor.getString(cursor.getColumnIndex("start_time"));
-                    String temp_deadline_date = cursor.getString(cursor.getColumnIndex("deadline_date"));
-                    String temp_deadline_time = cursor.getString(cursor.getColumnIndex("deadline_time"));
+                    String temp_start_date_time[] = cursor.getString(cursor.getColumnIndex("start_date_time")).split("[T]");
+                    String temp_deadline_date_time[] = cursor.getString(cursor.getColumnIndex("deadline_date_time")).split("[T]");
 
-                    events.add(new SingleEventForList(getIntent().getStringExtra("accountID"), temp_event_id, temp_title, temp_start_date, temp_start_time, temp_deadline_date, temp_deadline_time));
+                    events.add(new SingleEventForList(getIntent().getStringExtra("accountID"), temp_event_id, temp_title, temp_start_date_time[0], temp_start_date_time[1], temp_deadline_date_time[0], temp_deadline_date_time[1]));
                     cursor.moveToNext();
                 }
             }
@@ -136,13 +134,5 @@ public class EventListActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
 
-    }
-
-    public void moveToDetailList(String i) {
-        Intent intent = new Intent(EventListActivity.this, DetailList.class);
-        intent.putExtra("detailListMode",String.valueOf(2));
-        intent.putExtra("accountID",getIntent().getStringExtra("accountID"));
-        intent.putExtra("eventID",i);
-        startActivity(intent);
     }
 }
