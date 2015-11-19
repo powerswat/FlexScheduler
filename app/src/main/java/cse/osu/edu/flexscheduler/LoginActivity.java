@@ -372,7 +372,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         if(numberOfRows <= 0) {
             addEntry(email, password);
-            Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT).show();
             return true;
         }
         else {
@@ -385,11 +385,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             db.close();
             if(numberOfRows <= 0){
-                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
                 return false;
             }
             else {
-                Toast.makeText(getApplicationContext(), "Okay", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "Okay", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }

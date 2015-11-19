@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +27,6 @@ public class EventListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_list);
-        Toast.makeText(getApplicationContext(), String.valueOf(getIntent().getStringExtra("accountID")), Toast.LENGTH_SHORT).show();
-
 
         FloatingActionButton addNewEvent = (FloatingActionButton) findViewById(R.id.add_new_event);
 
@@ -105,6 +102,7 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         db.close();
+
     }
 
     private void initializeAdapter() {
@@ -132,5 +130,6 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+
     }
 }

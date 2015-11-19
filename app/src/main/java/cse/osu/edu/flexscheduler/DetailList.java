@@ -6,22 +6,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.StringTokenizer;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,10 +82,31 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     int current_year, current_month, current_day, current_hour, current_minute;
     int duration_hour, duration_minute;
 
+
+
+
+ /*   @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_list);
+
+
+  /*      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if(toolbar != null) {
+            toolbar.setTitle("FlexScheduler");
+
+            getActionBar().setTitle("My custom toolbar!");
+            getActionBar().setHomeButtonEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }*/
 
         // For picking a place
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -211,12 +229,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         postponeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAutocompleteView.setText("");
-
                 String[] selectionArg = {getIntent().getStringExtra("accountID")};
                 String[] columns = {"*"};
                 String selection = "account_id=?";
-                Cursor cursor = null;
+                Cursor cursor;
 
                 ArrayList<String> db_st_times = new ArrayList<String>();
                 ArrayList<String> db_durations = new ArrayList<String>();
@@ -225,7 +241,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
                 try {
                     cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection,
-                                        selectionArg, null, null, "start_date_time ASC");
+                            selectionArg, null, null, "start_date_time ASC");
                     if(cursor.moveToFirst()){
                         while(cursor.isAfterLast() == false){
                             db_st_times.add(cursor.getString(cursor.getColumnIndex("start_date_time")));
@@ -242,8 +258,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 duration_minute = Integer.parseInt(durationTxtMinutes.getText().toString());
 
                 best_st_time = findBestSpot(db_st_times, db_durations, db_dl_times, start_month+1, start_day,
-                            start_hour, start_year, start_minute, duration_hour, duration_minute,
-                            deadline_month+1, deadline_day, deadline_year, deadline_hour, deadline_minute);
+                        start_hour, start_year, start_minute, duration_hour, duration_minute,
+                        deadline_month+1, deadline_day, deadline_year, deadline_hour, deadline_minute);
 
                 if (best_st_time != null){
                     start_month = best_st_time.get(Calendar.MONTH);
@@ -255,6 +271,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 }
             }
         });
+
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,10 +289,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     }
 
     private Calendar findBestSpot(ArrayList<String> db_st_times, ArrayList<String> db_durations,
-                                ArrayList<String> db_dl_times, int start_month, int start_day,
-                                int start_hour, int start_year, int start_minute, int duration_hour,
-                                int duration_minute, int deadline_month, int deadline_day,
-                                int deadline_year, int deadline_hour, int deadline_minute) {
+                                  ArrayList<String> db_dl_times, int start_month, int start_day,
+                                  int start_hour, int start_year, int start_minute, int duration_hour,
+                                  int duration_minute, int deadline_month, int deadline_day,
+                                  int deadline_year, int deadline_hour, int deadline_minute) {
 
         int adj_duration = this.duration_hour + 1;
 
@@ -284,8 +301,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         SimpleDateFormat db_date_format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
 
         String st_time_str = Integer.toString(start_month) + " " + Integer.toString(start_day) + " "
-                                + Integer.toString(start_year) + " " + Integer.toString(start_hour) + " "
-                                + Integer.toString(start_minute);
+                + Integer.toString(start_year) + " " + Integer.toString(start_hour) + " "
+                + Integer.toString(start_minute);
         String dl_time_str = Integer.toString(deadline_month) + " " + Integer.toString(deadline_day) + " "
                 + Integer.toString(deadline_year) + " " + Integer.toString(deadline_hour) + " "
                 + Integer.toString(deadline_minute);
@@ -649,6 +666,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }catch(Exception e){
             e.printStackTrace();
         }
+
         db.close();
     }
 
@@ -681,26 +699,38 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     }
 
     public void addAlarm() {
-        Toast.makeText(getApplicationContext(),
-                startTxtDate.getText() + " " + event_ID,
-        Toast.LENGTH_LONG).show();
+      //  Toast.makeText(getApplicationContext(),
+      //          startTxtDate.getText() + " " + event_ID,
+      //  Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
         intent.putExtra("accountID", getIntent().getStringExtra("accountID"));
-        intent.putExtra("eventID",  String.valueOf(event_ID));
+        intent.putExtra("eventID", String.valueOf(event_ID));
+        intent.putExtra("title", mTitleView.getText().toString());
+        intent.putExtra("duration_hour", durationTxtHours.getText().toString());
+        intent.putExtra("duration_minute", durationTxtMinutes.getText().toString());
+        intent.putExtra("deadline_date", deadlineTxtDate.getText().toString());
+        intent.putExtra("deadline_time", deadlineTxtTime.getText().toString());
+
         pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent, 0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, start_date_calendar.getTimeInMillis(), pendingIntent);
     }
 
     public void updateAlarm() {
-        Toast.makeText(getApplicationContext(),
-                startTxtDate.getText() + " " + event_ID,
-                Toast.LENGTH_LONG).show();
+       // Toast.makeText(getApplicationContext(),
+       //         startTxtDate.getText() + " " + event_ID,
+       //         Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
         intent.putExtra("accountID", getIntent().getStringExtra("accountID"));
-        intent.putExtra("eventID",  String.valueOf(event_ID));
+        intent.putExtra("eventID", String.valueOf(event_ID));
+        intent.putExtra("title", mTitleView.getText().toString());
+        intent.putExtra("duration_hour", durationTxtHours.getText().toString());
+        intent.putExtra("duration_minute", durationTxtMinutes.getText().toString());
+        intent.putExtra("deadline_date", deadlineTxtDate.getText().toString());
+        intent.putExtra("deadline_time", deadlineTxtTime.getText().toString());
+
         pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, start_date_calendar.getTimeInMillis(), pendingIntent);
@@ -711,7 +741,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent,  PendingIntent.FLAG_CANCEL_CURRENT) ;
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
-        Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
     public boolean checkRangeBetweenStartAndDeadline() {
