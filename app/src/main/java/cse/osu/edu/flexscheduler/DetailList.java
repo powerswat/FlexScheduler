@@ -1,6 +1,10 @@
 package cse.osu.edu.flexscheduler;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 
@@ -79,6 +83,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     int start_year, start_month, start_day, start_hour, start_minute;
     int deadline_year, deadline_month, deadline_day, deadline_hour,  deadline_minute;
     int current_year, current_month, current_day, current_hour, current_minute;
+    int duration_hour, duration_minute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +135,9 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         current_minute = current_calendar.get(Calendar.MINUTE);
 
         detailListMode = getIntent().getExtras().getString("detailListMode");
+
+        mydb = new EventDatabase(this);
+        final SQLiteDatabase db = mydb.getReadableDatabase();
 
         if (detailListMode.equals("1")) {
             directionButton.setVisibility(View.GONE);
@@ -204,6 +212,47 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             @Override
             public void onClick(View v) {
                 mAutocompleteView.setText("");
+
+                String[] selectionArg = {getIntent().getStringExtra("accountID")};
+                String[] columns = {"*"};
+                String selection = "account_id=?";
+                Cursor cursor = null;
+
+                ArrayList<String> db_st_times = new ArrayList<String>();
+                ArrayList<String> db_durations = new ArrayList<String>();
+                ArrayList<String> db_dl_times = new ArrayList<String>();
+                Calendar best_st_time;
+
+                try {
+                    cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection,
+                                        selectionArg, null, null, "start_date_time ASC");
+                    if(cursor.moveToFirst()){
+                        while(cursor.isAfterLast() == false){
+                            db_st_times.add(cursor.getString(cursor.getColumnIndex("start_date_time")));
+                            db_durations.add(cursor.getString(cursor.getColumnIndex("duration")));
+                            db_dl_times.add(cursor.getString(cursor.getColumnIndex("deadline_date_time")));
+                            cursor.moveToNext();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                duration_hour = Integer.parseInt(durationTxtHours.getText().toString());
+                duration_minute = Integer.parseInt(durationTxtMinutes.getText().toString());
+
+                best_st_time = findBestSpot(db_st_times, db_durations, db_dl_times, start_month+1, start_day,
+                            start_hour, start_year, start_minute, duration_hour, duration_minute,
+                            deadline_month+1, deadline_day, deadline_year, deadline_hour, deadline_minute);
+
+                if (best_st_time != null){
+                    start_month = best_st_time.get(Calendar.MONTH);
+                    start_day = best_st_time.get(Calendar.DAY_OF_MONTH);
+                    start_year = best_st_time.get(Calendar.YEAR);
+                    start_hour = best_st_time.get(Calendar.HOUR_OF_DAY);
+                    start_minute = best_st_time.get(Calendar.MINUTE);
+                    updateStartDateTime();
+                }
             }
         });
 
@@ -220,6 +269,76 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 addValuesToDatabase();
             }
         });
+    }
+
+    private Calendar findBestSpot(ArrayList<String> db_st_times, ArrayList<String> db_durations,
+                                ArrayList<String> db_dl_times, int start_month, int start_day,
+                                int start_hour, int start_year, int start_minute, int duration_hour,
+                                int duration_minute, int deadline_month, int deadline_day,
+                                int deadline_year, int deadline_hour, int deadline_minute) {
+
+        int adj_duration = this.duration_hour + 1;
+
+        SimpleDateFormat date_format = new SimpleDateFormat("MM dd yyyy hh mm");
+        SimpleDateFormat duration_form = new SimpleDateFormat("hh mm");
+        SimpleDateFormat db_date_format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
+
+        String st_time_str = Integer.toString(start_month) + " " + Integer.toString(start_day) + " "
+                                + Integer.toString(start_year) + " " + Integer.toString(start_hour) + " "
+                                + Integer.toString(start_minute);
+        String dl_time_str = Integer.toString(deadline_month) + " " + Integer.toString(deadline_day) + " "
+                + Integer.toString(deadline_year) + " " + Integer.toString(deadline_hour) + " "
+                + Integer.toString(deadline_minute);
+        String dura_str = Integer.toString(adj_duration) + " " + Integer.toString(duration_minute);
+
+        Date st_time = new Date();
+        Date dl_time = new Date();
+        Date dura_time = new Date();
+
+        try {
+            st_time = date_format.parse(st_time_str);
+            dl_time = date_format.parse(dl_time_str);
+            dura_time = duration_form.parse(dura_str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < db_st_times.size()-1; i++){
+            try {
+                Date db_st_time = db_date_format.parse(db_st_times.get(i));
+                Date db_next_st_time = db_date_format.parse(db_st_times.get(i+1));
+                Date db_duration = duration_form.parse(db_durations.get(i));
+
+                if(st_time.getTime() >= db_st_time.getTime()){
+                    continue;
+                }
+
+                if (db_next_st_time.getTime() - (db_st_time.getTime() + db_duration.getTime())
+                        > dura_time.getTime()){
+                    Calendar cal_st = Calendar.getInstance();
+                    cal_st.setTime(db_st_time);
+                    Calendar cal_du = Calendar.getInstance();
+                    cal_du.setTime(db_duration);
+
+                    int st_hours = cal_st.get(Calendar.HOUR_OF_DAY);
+                    int du_hours = cal_du.get(Calendar.HOUR_OF_DAY);
+                    st_hours += (du_hours + 1);
+                    int st_mins = cal_st.get(Calendar.MINUTE);
+                    int du_mins = cal_du.get(Calendar.MINUTE);
+                    st_mins += du_mins;
+
+                    cal_st.set(Calendar.HOUR_OF_DAY, st_hours);
+                    cal_st.set(Calendar.MINUTE, st_mins);
+
+                    return cal_st;
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return null;
     }
 
     @Override
@@ -530,7 +649,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }catch(Exception e){
             e.printStackTrace();
         }
-
         db.close();
     }
 

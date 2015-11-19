@@ -105,7 +105,6 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         db.close();
-
     }
 
     private void initializeAdapter() {
@@ -133,6 +132,5 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-
     }
 }
