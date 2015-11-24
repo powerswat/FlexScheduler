@@ -18,7 +18,6 @@ import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,9 +43,11 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+/**
+ * An activity to display a list view of detail information about event
+ *
+ */
 public class DetailList extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener{
-
-
 
     TextView startTxtDate, startTxtTime, deadlineTxtDate, deadlineTxtTime, durationTxtMinutes, durationTxtHours;
 
@@ -62,8 +63,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     private TextView mTitleView;
     private TextView mNoteView;
     private TextView mParticipantView;
-    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+    private static final LatLngBounds BOUNDS_COLUMBUS = new LatLngBounds(
+            new LatLng(39.888694, -83.149669), new LatLng(40.146367, -82.857158));
 
     double latitude = 40.001626; // if GPS is not working, the current latitude and longitude are set up near Ohio Stadium
     double longitude = -83.019456;
@@ -82,31 +83,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     int current_year, current_month, current_day, current_hour, current_minute;
     int duration_hour, duration_minute;
 
-
-
-
- /*   @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_list);
-
-
-  /*      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(toolbar != null) {
-            toolbar.setTitle("FlexScheduler");
-
-            getActionBar().setTitle("My custom toolbar!");
-            getActionBar().setHomeButtonEnabled(true);
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }*/
 
         // For picking a place
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -120,15 +100,16 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         mNoteView= (TextView)findViewById(R.id.note);
         mParticipantView = (TextView)findViewById(R.id.participant);
 
-          // Register a listener that receives callbacks when a suggestion has been selected
+        // Register a listener that receives callbacks when a suggestion has been selected
         mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
 
         // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
         // the entire world.
-        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,
+        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_COLUMBUS,
                 null);
         mAutocompleteView.setAdapter(mAdapter);
 
+        // Set up the buttons that will display on DetailListActivity
         Button clearPlaceButton = (Button) findViewById(R.id.autocomplete_clear);
         Button clearTitleButton = (Button) findViewById(R.id.clear_title);
         Button clearNoteButton = (Button) findViewById(R.id.clear_note);
@@ -146,6 +127,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         durationTxtHours = (TextView)findViewById(R.id.duration_hours);
         durationTxtMinutes = (TextView)findViewById(R.id.duration_minutes);
 
+        // Set up the current date and time to Calendar values
         current_year = current_calendar.get(Calendar.YEAR);
         current_month = current_calendar.get(Calendar.MONTH);
         current_day = current_calendar.get(Calendar.DAY_OF_MONTH);
@@ -157,6 +139,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         mydb = new EventDatabase(this);
         final SQLiteDatabase db = mydb.getReadableDatabase();
 
+        /* Consider to different modes
+        * First, if new event will be added, detailListMode will be 1
+        * and direction, postpone, done buttons will be invisible.
+        * Second, if current event will be updated, detailListMode will be 2
+        * and add button will be invisible
+         */
         if (detailListMode.equals("1")) {
             directionButton.setVisibility(View.GONE);
             postponeButton.setVisibility(View.GONE);
@@ -176,6 +164,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        // Set up the 'clear text' button that clears the text in the title
         clearTitleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,6 +172,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        // Set up the 'clear text' button that clears the text in the note
         clearNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,6 +180,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        // Set up the 'clear text' button that clears the text in the participant
         clearParticipantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,6 +188,10 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        /* Set up the 'cancel' button
+        * If detailListMode is 1 (new event), move to EventListActivity without action
+        * If detailListMode is 2 (existing event), remove the event in Database
+        */
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,17 +210,20 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        // Set up 'direction' button that move to google map
+        // with the latitude and longitude of event place
         directionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri gmmIntentUri = Uri.parse("google.navigation:q=" + latitude +"," + longitude);
-                //Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + latitude +"," + longitude);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
             }
         });
 
+        // Set up 'postpone' button that find the next available time
+        // to do event
         postponeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -272,7 +270,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
-
+        // Set up 'done' button that update the event in database
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,6 +278,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             }
         });
 
+        // Set up 'add' button that insert the event in database
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -288,6 +287,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         });
     }
 
+    // Find the best available spot for postpone event
     private Calendar findBestSpot(ArrayList<String> db_st_times, ArrayList<String> db_durations,
                                   ArrayList<String> db_dl_times, int start_month, int start_day,
                                   int start_hour, int start_year, int start_minute, int duration_hour,
@@ -380,6 +380,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         return super.onOptionsItemSelected(item);
     }
 
+    // Set up when start date, start time, deadline date, deadline time are clicked
     public void mOnClick(View v) {
         switch(v.getId()) {
             case R.id.start_date:
@@ -397,6 +398,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }
     }
 
+    // when start date is selected on dialog, the start date and time will be updated
     DatePickerDialog.OnDateSetListener startDateSetListener =
             new DatePickerDialog.OnDateSetListener() {
                 @Override
@@ -409,6 +411,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 }
             };
 
+    // when start time is selected on dialog, the start date and time will be updated
     TimePickerDialog.OnTimeSetListener startTimeSetListener =
             new TimePickerDialog.OnTimeSetListener() {
                 @Override
@@ -419,6 +422,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 }
             };
 
+    // when deadline date is selected on dialog, the deadline date and time will be updated
     DatePickerDialog.OnDateSetListener deadlineDateSetListener =
             new DatePickerDialog.OnDateSetListener() {
                 @Override
@@ -431,6 +435,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 }
             };
 
+    // when deadline time is selected on dialog, the deadline date and time will be updated
     TimePickerDialog.OnTimeSetListener deadlineTimeSetListener =
             new TimePickerDialog.OnTimeSetListener() {
 
@@ -448,7 +453,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
      * Gets the place id of the selected item and issues a request to the Places Geo Data API
      * to retrieve more details about the place.
      *
-     * @see com.google.android.gms.location.places.GeoDataApi#getPlaceById(com.google.android.gms.common.api.GoogleApiClient,
+     * @see com.google.android.gms.location.places.GeoDataApi#getPlaceById(GoogleApiClient,
      * String...)
      */
     private AdapterView.OnItemClickListener mAutocompleteClickListener
@@ -498,6 +503,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             FragmentManager fm = getSupportFragmentManager();
             DetailListFragment detailFragment = (DetailListFragment)fm.findFragmentById(R.id.detail_list_fragment);
 
+            // Update the place information
             if (detailFragment != null) {
                 detailFragment.changeMap(place.getLatLng());
 
@@ -530,8 +536,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                 Toast.LENGTH_SHORT).show();
     }
 
-
-
+    // Set up the initial Date Time to current date and time
     public void initializeNewDetailList() {
             start_year =  deadline_year = current_year;
             start_month =  deadline_month = current_month;
@@ -543,6 +548,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
             updateDeadlineDateTime();
     }
 
+    // when current existing event is selected on EventLIstActivity,
+    // the function loads the information of event in database
     public void initializeExistedDetailList() {
         event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
 
@@ -579,16 +586,19 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         db.close();
     }
 
+    // update start date and time
     void updateStartDateTime(){
         startTxtDate.setText(String.format("%d-%02d-%02d", start_year, start_month+1, start_day));
         startTxtTime.setText(String.format("%02d:%02d", start_hour, start_minute));
     }
 
+    // update deadline date and time
     void updateDeadlineDateTime(){
         deadlineTxtDate.setText(String.format("%d-%02d-%02d", deadline_year, deadline_month+1, deadline_day));
         deadlineTxtTime.setText(String.format("%02d:%02d", deadline_hour, deadline_minute));
     }
 
+    // extract the string from data and time in database for alarm
     void extractStringToDateTimeFromDatabase(Cursor cursor) {
         String startDateTimeArray [] = cursor.getString(cursor.getColumnIndex("start_date_time")).split("[T]");
         String deadlineDateTimeArray [] = cursor.getString(cursor.getColumnIndex("deadline_date_time")).split("[T]");
@@ -610,6 +620,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         deadline_minute = Integer.valueOf(deadlineTimeArray[1]);
     }
 
+    // extract each value in database and put it to view
     void extractValuesFromDatabase(Cursor cursor) {
         String textStr[] = cursor.getString(cursor.getColumnIndex("duration")).split("\\s+");
         mTitleView.setText(cursor.getString(cursor.getColumnIndex("title")));
@@ -622,6 +633,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         longitude = cursor.getDouble(cursor.getColumnIndex("place_longitude"));
     }
 
+    // add the information of event to database and back to EventListActivity
     void addValuesToDatabase() {
         values.put("account_id", getIntent().getStringExtra("accountID"));
         values.put("title", mTitleView.getText().toString());
@@ -640,6 +652,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }
     }
 
+    // update the information of event in database and back to EventListActivity
     void updateValuesToDatabase() {
         values.put("title", mTitleView.getText().toString());
         values.put("start_date_time", startTxtDate.getText().toString() + 'T' + startTxtTime.getText().toString());
@@ -657,6 +670,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         }
     }
 
+    // call the database to insert the values of the event
     public void addEntry(ContentValues values){
         mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getWritableDatabase();
@@ -670,6 +684,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         db.close();
     }
 
+    // call the database to update the values of the event
     public void updateEntry(ContentValues values){
         mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getWritableDatabase();
@@ -686,6 +701,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         db.close();
     }
 
+    // call the database to delete the values of the event
     public void deleteEntry() {
         mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getWritableDatabase();
@@ -698,11 +714,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         db.close();
     }
 
+    // add alarm receiver based on values of event
     public void addAlarm() {
-      //  Toast.makeText(getApplicationContext(),
-      //          startTxtDate.getText() + " " + event_ID,
-      //  Toast.LENGTH_LONG).show();
-
         Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
         intent.putExtra("accountID", getIntent().getStringExtra("accountID"));
         intent.putExtra("eventID", String.valueOf(event_ID));
@@ -717,11 +730,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         alarmManager.set(AlarmManager.RTC_WAKEUP, start_date_calendar.getTimeInMillis(), pendingIntent);
     }
 
+    // update alarm receiver based on values of event
     public void updateAlarm() {
-       // Toast.makeText(getApplicationContext(),
-       //         startTxtDate.getText() + " " + event_ID,
-       //         Toast.LENGTH_LONG).show();
-
         Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
         intent.putExtra("accountID", getIntent().getStringExtra("accountID"));
         intent.putExtra("eventID", String.valueOf(event_ID));
@@ -736,14 +746,16 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         alarmManager.set(AlarmManager.RTC_WAKEUP, start_date_calendar.getTimeInMillis(), pendingIntent);
     }
 
+    // cancel alarm receiver based on values of event
     public void cancelAlarm() {
         Intent intent = new Intent(getBaseContext(), AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(getBaseContext(), (int)event_ID, intent,  PendingIntent.FLAG_CANCEL_CURRENT) ;
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
-       // Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
+    // check whether start date and time is later than deadline date and time
+    // and start date time is earlier than current date and time
     public boolean checkRangeBetweenStartAndDeadline() {
         start_date_calendar.set(start_year, start_month, start_day, start_hour, start_minute, 00);
         deadline_date_calendar.set(deadline_year, deadline_month, deadline_day, deadline_hour, deadline_minute, 00);

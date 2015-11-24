@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -89,6 +90,12 @@ public class DetailListFragment extends Fragment {
 
             longitude = myLocation.getLongitude();
         }
+     /*   else {
+            Toast.makeText(this,
+                    "Could not connect to GPS: Current address will set up the Ohio Stadium " + latitude + longitude ,
+                    Toast.LENGTH_SHORT).show();
+        }*/
+
 
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

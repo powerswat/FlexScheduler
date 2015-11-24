@@ -138,7 +138,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
             Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
+                    .setAction(android.R.string.ok, new OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
                         public void onClick(View v) {
@@ -212,11 +212,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
 
-            // Login validity checking module
             boolean validLogin = validateLogin(email, password, this);
-
-            // If the login information has been proven as valid
-            // then move on to the next page specific to the authorized user
             if(validLogin){
                 long id = 1000000;
                 SQLiteDatabase db = mydb.getReadableDatabase();
@@ -348,16 +344,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-    mEmailView.setAdapter(adapter);
+        mEmailView.setAdapter(adapter);
     }
 
-    /**
-     * Login information checking module
-     * @param email: Email address provided through the "Email" text box in the login page
-     * @param password: Password provided through the "Password" text box in the login page
-     * @param context:
-     * @return
-     */
     public boolean validateLogin(String email, String password, Context context) {
         mydb = new LoginDatabase(context);
         SQLiteDatabase db = mydb.getReadableDatabase();

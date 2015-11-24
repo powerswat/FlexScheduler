@@ -1,5 +1,6 @@
 package cse.osu.edu.flexscheduler;
 
+import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
 
 import java.lang.Exception;
@@ -12,8 +13,9 @@ import cse.osu.edu.flexscheduler.LoginActivity;
  */
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
     LoginActivity mLoginActivity;
-    String email = "aaa@aa.aaa";
-    boolean is_valid;
+    String[] email = {"aaa@aa.aaa", "bbb@bb.bbb"};
+    String[] password = {"11111", "22222"};
+    boolean[] answer = {true, true};
 
     public LoginActivityTest(){
         super(LoginActivity.class);
@@ -27,6 +29,14 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
 
     public void testPreconditions(){
         assertNotNull(mLoginActivity);
+    }
+
+    public void testValidateLogin(){
+        Context context = mLoginActivity;
+        for (int i = 0; i < email.length; i++){
+            boolean is_valid = mLoginActivity.validateLogin(email[i], password[i], context);
+            assertEquals(answer[i], is_valid);
+        }
     }
 
     @Override

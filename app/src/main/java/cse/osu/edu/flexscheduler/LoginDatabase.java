@@ -4,11 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-
+/**
+ * DB schema for all account in the program
+ */
 public class LoginDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "flexScheduler.db";
     private static final int DATABASE_VERSION = 1;
     public static final String FLEX_SCHEDULER_TABLE_NAME = "login";
+    // Attributes: email and password
     private static final String FLEX_SCHEDULER_TABLE_CREATE =
             "CREATE TABLE " + FLEX_SCHEDULER_TABLE_NAME + "(" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+

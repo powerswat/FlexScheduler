@@ -1,6 +1,5 @@
 package cse.osu.edu.flexscheduler;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
