@@ -16,6 +16,10 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An activity to display a list view of all the saved events for the current user
+ * (Right after the valid login process)
+ */
 public class EventListActivity extends AppCompatActivity {
 
     private List<SingleEventForList> events;
@@ -23,6 +27,8 @@ public class EventListActivity extends AppCompatActivity {
 
     EventDatabase mydb;
 
+    // When the activity is created, it displays the event list layout and
+    // Initialize the event DB by retrieving all the events related to the current user
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +36,8 @@ public class EventListActivity extends AppCompatActivity {
 
         FloatingActionButton addNewEvent = (FloatingActionButton) findViewById(R.id.add_new_event);
 
+        // When the user clicks the floating action button at the bottom
+        // it calls a new template of an event detail.
         addNewEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,45 +50,32 @@ public class EventListActivity extends AppCompatActivity {
 
         rv = (RecyclerView) findViewById(R.id.rv);
 
+        // Display the current activity layout through a RecylerView object
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
+        // Retrieve the DB object to the memory and all the current uesr's events
         initializeData();
+
+        // Starts the list layout displaying process in RecyclerView
         initializeAdapter();
     }
 
+    /**
+     * Retrieve the DB object to the memory and all the current uesr's events
+     */
     private void initializeData() {
         events = new ArrayList<>();
         mydb = new EventDatabase(this);
 
-/*
-        SQLiteDatabase db = mydb.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("account_id", getIntent().getStringExtra("accountID"));
-        values.put("start_date_time", "2015-11-17T10:00");
-        values.put("duration", "10 00");
-        values.put("deadline_date_time", "2015-11-17T10:00");
-       // values.put("deadline_time", "11:00");
-        values.put("title", "Test1");
-
-        try{
-            db.insert(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, null, values);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-*/
-        //mydb = new EventDatabase(this);
+        // Retrieve the DB object to the memory
         SQLiteDatabase db = mydb.getReadableDatabase();
 
-        //WHERE clause arguments
+        // Retreive all the current uesr's events by providing a corresponding SQL query
         String[] selectionArg = {getIntent().getStringExtra("accountID")};
-
         String[] columns = {"*"};
-
         String selection = "account_id=?";
-
         Cursor cursor = null;
         try {
             cursor = db.query(EventDatabase.FLEX_SCHEDULER_TABLE_NAME, columns, selection, selectionArg, null, null,  "start_date_time  ASC");
@@ -102,9 +97,11 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         db.close();
-
     }
 
+    /**
+     * Starts the list layout displaying process in RecyclerView
+     */
     private void initializeAdapter() {
         RVAdapter adapter = new RVAdapter(events);
         rv.setAdapter(adapter);
@@ -130,6 +127,5 @@ public class EventListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-
     }
 }
