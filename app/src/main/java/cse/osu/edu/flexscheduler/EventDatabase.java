@@ -37,7 +37,7 @@ public class EventDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        // Create Database: Running once at the new user registration
+        // Create Database: Running once at the time of a new user registration
         try{
             //Create Database
             db.execSQL(FLEX_SCHEDULER_TABLE_CREATE);
