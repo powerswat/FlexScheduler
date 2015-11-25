@@ -12,10 +12,11 @@ import cse.osu.edu.flexscheduler.LoginActivity;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginActivity> {
-    LoginActivity mLoginActivity;
-    String[] email = {"aaa@aa.aaa", "bbb@bb.bbb"};
-    String[] password = {"11111", "22222"};
-    boolean[] answer = {true, true};
+
+    private LoginActivity mLoginActivity;
+    private String[] email = {"aaa@aa.aaa", "bbb@bb.bbb"};
+    private String[] password = {"11111", "22222"};
+    private boolean[] answer = {true, true};
 
     public LoginActivityTest(){
         super(LoginActivity.class);

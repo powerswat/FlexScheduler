@@ -136,7 +136,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
         detailListMode = getIntent().getExtras().getString("detailListMode");
 
-        mydb = new EventDatabase(this);
+        // The following code is only for unit testing please uncomment the code and
+        // comment the code "detailListMode = getIntent().getExtras().getString("detailListMode");"
+        // above to proceed the test
+        // detailListMode = "2";
+
+                mydb = new EventDatabase(this);
         final SQLiteDatabase db = mydb.getReadableDatabase();
 
         /* Consider to different modes
@@ -288,7 +293,7 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     }
 
     // Find the best available spot for postpone event
-    private Calendar findBestSpot(ArrayList<String> db_st_times, ArrayList<String> db_durations,
+    public Calendar findBestSpot(ArrayList<String> db_st_times, ArrayList<String> db_durations,
                                   ArrayList<String> db_dl_times, int start_month, int start_day,
                                   int start_hour, int start_year, int start_minute, int duration_hour,
                                   int duration_minute, int deadline_month, int deadline_day,
@@ -336,6 +341,8 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
                     cal_st.setTime(db_st_time);
                     Calendar cal_du = Calendar.getInstance();
                     cal_du.setTime(db_duration);
+                    Calendar cal_dl = Calendar.getInstance();
+                    cal_dl.setTime(dl_time);
 
                     int st_hours = cal_st.get(Calendar.HOUR_OF_DAY);
                     int du_hours = cal_du.get(Calendar.HOUR_OF_DAY);
@@ -346,6 +353,14 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
                     cal_st.set(Calendar.HOUR_OF_DAY, st_hours);
                     cal_st.set(Calendar.MINUTE, st_mins);
+
+                    if (cal_st.after(cal_dl)){
+                        Toast.makeText(getApplicationContext(),
+                                "Cannot postpone beyond the deadline",
+                                Toast.LENGTH_LONG).show();
+                        cal_st.setTime(db_st_time);
+                        return null;
+                    }
 
                     return cal_st;
                 }
@@ -553,7 +568,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     public void initializeExistedDetailList() {
         event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
 
-        mydb = new EventDatabase(this);
+        // The following code is only for unit testing please uncomment the code and
+        // comment the code "event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));"
+        // above to proceed the test
+        // event_ID = 1;
+
+                mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getReadableDatabase();
 
         //WHERE clause arguments
