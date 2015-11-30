@@ -134,12 +134,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         current_hour = current_calendar.get(Calendar.HOUR_OF_DAY);
         current_minute = current_calendar.get(Calendar.MINUTE);
 
-        //detailListMode = getIntent().getExtras().getString("detailListMode");
+        detailListMode = getIntent().getExtras().getString("detailListMode");
 
         // The following code is only for unit testing please uncomment the code and
         // comment the code "detailListMode = getIntent().getExtras().getString("detailListMode");"
         // above to proceed the test
-        detailListMode = "2";
+        //detailListMode = "2";
 
                 mydb = new EventDatabase(this);
         final SQLiteDatabase db = mydb.getReadableDatabase();
@@ -566,12 +566,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     // when current existing event is selected on EventLIstActivity,
     // the function loads the information of event in database
     public void initializeExistedDetailList() {
-        //event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
+        event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
 
         // The following code is only for unit testing please uncomment the code and
         // comment the code "event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));"
         // above to proceed the test
-        event_ID = 1;
+        //event_ID = 1;
 
                 mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getReadableDatabase();
