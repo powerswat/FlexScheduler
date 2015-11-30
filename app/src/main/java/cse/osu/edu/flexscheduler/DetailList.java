@@ -134,12 +134,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         current_hour = current_calendar.get(Calendar.HOUR_OF_DAY);
         current_minute = current_calendar.get(Calendar.MINUTE);
 
-        detailListMode = getIntent().getExtras().getString("detailListMode");
+        //detailListMode = getIntent().getExtras().getString("detailListMode");
 
         // The following code is only for unit testing please uncomment the code and
         // comment the code "detailListMode = getIntent().getExtras().getString("detailListMode");"
         // above to proceed the test
-        // detailListMode = "2";
+        detailListMode = "2";
 
                 mydb = new EventDatabase(this);
         final SQLiteDatabase db = mydb.getReadableDatabase();
@@ -292,12 +292,34 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_detail_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     // Find the best available spot for postpone event
     public Calendar findBestSpot(ArrayList<String> db_st_times, ArrayList<String> db_durations,
-                                  ArrayList<String> db_dl_times, int start_month, int start_day,
-                                  int start_hour, int start_year, int start_minute, int duration_hour,
-                                  int duration_minute, int deadline_month, int deadline_day,
-                                  int deadline_year, int deadline_hour, int deadline_minute) {
+                                 ArrayList<String> db_dl_times, int start_month, int start_day,
+                                 int start_hour, int start_year, int start_minute, int duration_hour,
+                                 int duration_minute, int deadline_month, int deadline_day,
+                                 int deadline_year, int deadline_hour, int deadline_minute) {
 
         int adj_duration = this.duration_hour + 1;
 
@@ -371,28 +393,6 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
 
         }
         return null;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     // Set up when start date, start time, deadline date, deadline time are clicked
@@ -566,12 +566,12 @@ public class DetailList extends FragmentActivity implements GoogleApiClient.OnCo
     // when current existing event is selected on EventLIstActivity,
     // the function loads the information of event in database
     public void initializeExistedDetailList() {
-        event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
+        //event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));
 
         // The following code is only for unit testing please uncomment the code and
         // comment the code "event_ID = Integer.valueOf(getIntent().getStringExtra("eventID"));"
         // above to proceed the test
-        // event_ID = 1;
+        event_ID = 1;
 
                 mydb = new EventDatabase(this);
         SQLiteDatabase db = mydb.getReadableDatabase();
